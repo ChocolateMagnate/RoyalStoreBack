@@ -1,0 +1,23 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1060437617018-9c6f0vtn8vstf34mu8esmpg42n38b1ke.apps.googleusercontent.com
+            client-secret: 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
+        provider:
+          google:
+            issuerUri: https://accounts.google.com
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+jwt:
+  secret-key: EH5Rnxg9KsdSu283ruRGtHaS2qNUCxhc
