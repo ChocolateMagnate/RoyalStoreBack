@@ -1,7 +1,6 @@
 package com.royal.errors;
 
 import com.royal.errors.http.*;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +15,7 @@ public class GlobalExceptionMapping {
     }
 
     @ExceptionHandler(UserDoesNotExistException.class)
-    public ResponseEntity<String> handleUserDoesNotExistException(UserAlreadyExistsException e) {
+    public ResponseEntity<String> handleUserDoesNotExistException(UserDoesNotExistException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 

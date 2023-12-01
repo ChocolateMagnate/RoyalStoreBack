@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -22,10 +23,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PutMapping("/register")
-    public ResponseEntity<PublicUserDetails> register(@RequestParam("email") String email,
-                                                      @RequestParam("password") String password,
-                                                      @RequestParam("remember-me") boolean rememberMe) throws UserAlreadyExistsException, IllegalUserCredentialsException {
+    @PutMapping(value = "/register", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<PublicUserDetails> register(@RequestBody HashMap<String, String> json) throws UserAlreadyExistsException, IllegalUserCredentialsException {
+        String email = json.get("email");
+        String password = json.get("password");
+        boolean rememberMe = Boolean.parseBoolean(json.get("rememberMe"));
         try {
             PublicUserDetails details = userService.registerNewUser(email, password, rememberMe);
             return ResponseEntity.status(HttpStatus.OK).body(details);

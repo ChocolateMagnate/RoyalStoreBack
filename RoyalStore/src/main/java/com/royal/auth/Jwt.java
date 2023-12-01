@@ -6,7 +6,6 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.errors.jwt.JwtNotPresentException;
-import com.royal.errors.jwt.JwtSignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,20 +37,25 @@ public class Jwt {
         return header.substring(7);
     }
 
-    public Optional<JWTClaimsSet> tryGetClaims(HttpServletRequest request) throws JwtSignatureException {
-        String token = null;
+    public Optional<JWTClaimsSet> tryGetClaims(HttpServletRequest request) {
         try {
-            token = getJwtToken(request);
+            String token = getJwtToken(request);
             SignedJWT signedJWT = SignedJWT.parse(token);
-            JWSVerifier verifier = new MACVerifier(this.jwtSingingKey);
-            if (!signedJWT.verify(verifier))
-                throw new JwtSignatureException(token);
             return Optional.ofNullable(signedJWT.getJWTClaimsSet());
-        } catch (JwtNotPresentException | ParseException | JOSEException e) {
+        } catch (JwtNotPresentException | ParseException e) {
             return Optional.empty();
         }
+    }
 
-
+    public boolean tokenIsIncorrectlySigned(String token) {
+        if (token == null) return true;
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWSVerifier verifier = new MACVerifier(this.jwtSingingKey);
+            return !signedJWT.verify(verifier);
+        } catch (ParseException | JOSEException e) {
+            return true;
+        }
     }
 
     public boolean tokenIsExpired(@NotNull JWTClaimsSet claims) {
@@ -65,7 +69,7 @@ public class Jwt {
 
     public String generateJwtToken(String username, Date expiration) throws Exception {
         KeyPair pair = generateKeyPair();
-        JWSSigner signer = new RSASSASigner((RSAPrivateKey) pair.getPrivate());
+        JWSSigner signer = new RSASSASigner(pair.getPrivate());
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(username)
                 .issuer("http://localhost")

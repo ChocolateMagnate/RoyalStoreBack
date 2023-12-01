@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -20,22 +21,36 @@ public class OAuth2Filter extends OncePerRequestFilter {
     @Autowired
     private Jwt jwt;
 
+    private final AntPathRequestMatcher[] publicEndpointMatchers = {
+            new AntPathRequestMatcher("/register"),
+            new AntPathRequestMatcher("/login")
+    };
+
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
-        Optional<JWTClaimsSet> claims = jwt.tryGetClaims(request);
-        if (claims.isPresent() && jwt.tokenIsExpired(claims.get()))
-            response.sendError(HttpStatus.UNAUTHORIZED.value(),
-                    "Google authentication has expired, please authenticate through Google again.");
+        if (shouldFilter(request)) filterRequest(request, response);
         filterChain.doFilter(request, response);
     }
-/*
+
     @Override
     protected boolean shouldNotFilter(@NotNull HttpServletRequest request) {
-        RequestMatcher registerMatcher = new AntPathRequestMatcher("/register", HttpMethod.PUT.name());
-        RequestMatcher loginMatcher = new AntPathRequestMatcher("/login", HttpMethod.GET.name());
-        RequestMatcher negatedRegisterMatcher = new NegatedRequestMatcher(registerMatcher);
-        RequestMatcher negatedLoginMatcher = new NegatedRequestMatcher(loginMatcher);
-        return !negatedRegisterMatcher.matches(request) || !negatedLoginMatcher.matches(request);
-    }*/
+        for (AntPathRequestMatcher endpoint : publicEndpointMatchers )
+            if (endpoint.matches(request)) return true;
+        return false;
+    }
+
+    private boolean shouldFilter(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        return token != null;
+    }
+
+    private void filterRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Optional<JWTClaimsSet> claims = jwt.tryGetClaims(request);
+        if (claims.isPresent() && jwt.tokenIsExpired(claims.get())) {
+            int errorCode = HttpStatus.UNAUTHORIZED.value();
+            String message = "Google authentication has expired, please authenticate through Google again.";
+            response.sendError(errorCode, message);
+        }
+    }
 }
