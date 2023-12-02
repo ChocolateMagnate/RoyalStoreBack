@@ -8,6 +8,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class PublicUserDetails {
+    private String id;
     private String token;
     private String email;
     private String username;

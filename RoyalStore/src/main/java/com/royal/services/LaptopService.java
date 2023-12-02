@@ -1,5 +1,6 @@
 package com.royal.services;
 
+import com.royal.errors.HttpException;
 import com.royal.models.products.Laptop;
 import com.royal.repositories.LaptopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,16 @@ public class LaptopService {
         return template.find(customisedVariableParameterQuery, Laptop.class);
     }
 
-    public int createNewLaptop(Laptop newLaptop) {
-        if (laptopRepository.exists(Example.of(newLaptop))) return HttpStatus.FOUND.value();
+    public void createNewLaptop(Laptop newLaptop) throws HttpException {
+        if (laptopRepository.exists(Example.of(newLaptop)))
+            throw new HttpException(HttpStatus.FOUND, "The same laptop already exists.");
         laptopRepository.save(newLaptop);
-        return HttpStatus.OK.value();
     }
 
-    public int updateLaptopById(String id, Laptop updatedLaptop) {
+    public void updateLaptopById(String id, Laptop updatedLaptop) throws HttpException {
         Optional<Laptop> laptopInDatabase = laptopRepository.findById(id);
-        if (laptopInDatabase.isEmpty()) return HttpStatus.NOT_FOUND.value();
+        if (laptopInDatabase.isEmpty())
+            throw new HttpException(HttpStatus.NOT_FOUND, "The laptop by ID " + id + " does not exist.");
         Laptop extractedLaptop = laptopInDatabase.get();
         extractedLaptop.setOs(updatedLaptop.getOs());
         extractedLaptop.setCard(updatedLaptop.getCard());
@@ -54,12 +56,11 @@ public class LaptopService {
         extractedLaptop.setBuildMaterial(updatedLaptop.getBuildMaterial());
         extractedLaptop.setConnectivities(updatedLaptop.getConnectivities());
         laptopRepository.save(extractedLaptop);
-        return HttpStatus.OK.value();
     }
 
-    public int deleteLaptopById(String id) {
-        if (!laptopRepository.existsById(id)) return HttpStatus.NOT_FOUND.value();
+    public void deleteLaptopById(String id) throws HttpException {
+        if (!laptopRepository.existsById(id))
+            throw new HttpException(HttpStatus.NOT_FOUND, "Laotptop by ID " + id + " does not exist.");
         laptopRepository.deleteById(id);
-        return HttpStatus.OK.value();
     }
 }

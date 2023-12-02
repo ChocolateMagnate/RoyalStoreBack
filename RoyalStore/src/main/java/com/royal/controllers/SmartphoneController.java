@@ -1,5 +1,6 @@
 package com.royal.controllers;
 
+import com.royal.errors.HttpException;
 import com.royal.models.products.Smartphone;
 import com.royal.services.SmartphoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,21 +20,18 @@ public class SmartphoneController {
     }
 
     @PutMapping("/create-smartphone")
-    public ResponseEntity<Void> createSmartphone(@RequestBody Smartphone newSmartphone) {
-        int code = smartphoneService.createSmartphone(newSmartphone);
-        return ResponseEntity.status(code).build();
+    public void createSmartphone(@RequestBody Smartphone newSmartphone) throws HttpException {
+        smartphoneService.createSmartphone(newSmartphone);
     }
 
     @PostMapping("/update-smartphone/{id}")
-    public ResponseEntity<Void> updateSmartphone(@PathVariable String id, @RequestBody Smartphone updatedSmartphone) {
-        int code = smartphoneService.updateSmartphoneById(id, updatedSmartphone);
-        return ResponseEntity.status(code).build();
+    public void updateSmartphone(@PathVariable String id, @RequestBody Smartphone updatedSmartphone) throws HttpException {
+        smartphoneService.updateSmartphoneById(id, updatedSmartphone);
     }
 
     @DeleteMapping("/delete-smartphone/{id}")
-    public ResponseEntity<Void> deleteSmartphoneById(@PathVariable String id) {
-        int code = smartphoneService.deleteSmartphoneById(id);
-        return ResponseEntity.status(code).build();
+    public void deleteSmartphoneById(@PathVariable String id) throws HttpException {
+        smartphoneService.deleteSmartphoneById(id);
     }
 
 }

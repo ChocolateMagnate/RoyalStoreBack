@@ -1,5 +1,6 @@
 package com.royal.services;
 
+import com.royal.errors.HttpException;
 import com.royal.models.products.Smartphone;
 import com.royal.repositories.SmartphoneRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,15 +34,16 @@ public class SmartphoneService {
         return template.find(customisedVariableParameterQuery, Smartphone.class);
     }
 
-    public int createSmartphone(Smartphone newSmartphone) {
-        if (smartphoneRepository.exists(Example.of(newSmartphone))) return HttpStatus.FOUND.value();
+    public void createSmartphone(Smartphone newSmartphone) throws HttpException {
+        if (smartphoneRepository.exists(Example.of(newSmartphone)))
+            throw new HttpException(HttpStatus.FOUND, "The same smartphone already exists.");
         smartphoneRepository.save(newSmartphone);
-        return HttpStatus.OK.value();
     }
 
-    public int updateSmartphoneById(String id, Smartphone updatedSmartphone) {
+    public void updateSmartphoneById(String id, Smartphone updatedSmartphone) throws HttpException {
         Optional<Smartphone> smartphoneInDatabase = smartphoneRepository.findById(id);
-        if (smartphoneInDatabase.isEmpty()) return HttpStatus.NOT_FOUND.value();
+        if (smartphoneInDatabase.isEmpty())
+            throw new HttpException(HttpStatus.NOT_FOUND, "Smartphone by ID " + id + " already exists.");
         Smartphone extractedSmartphone = smartphoneInDatabase.get();
         extractedSmartphone.setOs(updatedSmartphone.getOs());
         extractedSmartphone.setBrand(updatedSmartphone.getBrand());
@@ -54,12 +56,11 @@ public class SmartphoneService {
         extractedSmartphone.setConnectivities(updatedSmartphone.getConnectivities());
         extractedSmartphone.setBatteryCapacityMAH(updatedSmartphone.getBatteryCapacityMAH());
         smartphoneRepository.save(extractedSmartphone);
-        return HttpStatus.OK.value();
     }
 
-    public int deleteSmartphoneById(String id) {
-        if (!smartphoneRepository.existsById(id)) return HttpStatus.NOT_FOUND.value();
+    public void deleteSmartphoneById(String id) throws HttpException {
+        if (!smartphoneRepository.existsById(id))
+            throw new HttpException(HttpStatus.NOT_FOUND, "The smartphone by ID " + id + " doesn't exist.");
         smartphoneRepository.deleteById(id);
-        return HttpStatus.OK.value();
     }
 }

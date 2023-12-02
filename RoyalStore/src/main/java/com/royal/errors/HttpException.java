@@ -3,7 +3,7 @@ package com.royal.errors;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 @Getter
-public abstract class HttpException extends Throwable  {
+public class HttpException extends Exception  {
     protected HttpStatus httpErrorCode;
     protected String message;
 
@@ -11,8 +11,14 @@ public abstract class HttpException extends Throwable  {
         super();
     }
 
-    public HttpException(String reason) {
+    public HttpException(HttpStatus code, String reason) {
         super(reason);
+        this.httpErrorCode = code;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 
 }

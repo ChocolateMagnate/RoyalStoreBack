@@ -1,41 +1,16 @@
 package com.royal.errors;
 
-import com.royal.errors.http.*;
-import org.springframework.http.HttpStatus;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@Log4j2
 @ControllerAdvice
 public class GlobalExceptionMapping {
-
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(e.getMessage());
-    }
-
-    @ExceptionHandler(UserDoesNotExistException.class)
-    public ResponseEntity<String> handleUserDoesNotExistException(UserDoesNotExistException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
-
-    @ExceptionHandler(UserIsLoggedOutException.class)
-    public ResponseEntity<String> handleUserIsLoggedOutException(UserIsLoggedOutException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-    }
-
-    @ExceptionHandler(IncorrectUserPasswordException.class)
-    public ResponseEntity<String> handleIncorrectUserPasswordException(IncorrectUserPasswordException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-    }
-
-    @ExceptionHandler(IllegalUserCredentialsException.class)
-    public ResponseEntity<String> handleIllegalUserCredentialsException(IllegalUserCredentialsException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    @ExceptionHandler(BadAuthorizationException.class)
-    public ResponseEntity<String> handleBadAuthorizationException(BadAuthorizationException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    @ExceptionHandler(HttpException.class)
+    public ResponseEntity<String> handleHttpException(HttpException e) {
+        log.info("HTTP Response " + e.getHttpErrorCode().toString() + ": " + e.getMessage());
+        return ResponseEntity.status(e.getHttpErrorCode().value()).body(e.getMessage());
     }
 }

@@ -3,6 +3,7 @@ package com.royal.auth.filters;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.auth.JwtService;
+import com.royal.errors.HttpException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,8 @@ public class EmailAndPasswordLoginFilter extends OncePerRequestFilter {
         try {
             filterRequest(request, response);
             filterChain.doFilter(request, response);
+        } catch (HttpException e) {
+            response.sendError(e.getHttpErrorCode().value(), e.getMessage());
         } catch (Exception e) {
             response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
         }

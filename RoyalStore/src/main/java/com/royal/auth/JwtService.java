@@ -5,10 +5,13 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.royal.errors.HttpException;
 import com.royal.errors.jwt.JwtNotPresentException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -67,10 +70,10 @@ public class JwtService {
         return expiration.isAfter(now);
     }
 
-    public SignedJWT generateJwtToken(String subject, Date expiration,
-                                      boolean rememberMe) throws JOSEException, NoSuchAlgorithmException {
+    public SignedJWT generateJwtToken(String subject, boolean rememberMe) throws HttpException {
         KeyPair pair = generateKeyPair();
         JWSSigner signer = new RSASSASigner(pair.getPrivate());
+        Date expiration = getExpirationTime(Instant.now(), rememberMe);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(subject)
                 .issuer("http://localhost")
@@ -78,22 +81,31 @@ public class JwtService {
                 .claim("rememberMe", rememberMe)
                 .build();
 
-        SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("kid").build(), claimsSet);
-        signedJWT.sign(signer);
-        return signedJWT;
+        try {
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("kid").build(), claimsSet);
+            signedJWT.sign(signer);
+            return signedJWT;
+        } catch (JOSEException e) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED,
+                    "JWT token could not be signed with " + signer.toString());
+        }
     }
 
     public SignedJWT regenerateExpiringJwtToken(JWTClaimsSet claims) throws Exception {
         if (tokenIsExpired(claims)) return null;
         String subject = claims.getSubject();
-        var rememberMe = (boolean)claims.getClaim("remember-me");
-        int durationInMinutes = (rememberMe) ? 2 * 60 : 30;
-        Instant issuedAt = claims.getIssueTime().toInstant();
-        Instant newExpirationTime = issuedAt.plus(durationInMinutes, ChronoUnit.MINUTES);
-        return generateJwtToken(subject, Date.from(newExpirationTime), rememberMe);
+        var rememberMe = (boolean)claims.getClaim("rememberMe");
+        return generateJwtToken(subject, rememberMe);
     }
 
-    private static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
+    private Date getExpirationTime(Instant issuedAt, boolean rememberMe) {
+        int durationInMinutes = (rememberMe) ? 2 * 64 : 30;
+        Instant expiration = issuedAt.plus(durationInMinutes, ChronoUnit.MINUTES);
+        return Date.from(expiration);
+    }
+
+    @SneakyThrows(NoSuchAlgorithmException.class)
+    private static KeyPair generateKeyPair() {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         return keyPairGenerator.generateKeyPair();
