@@ -1,7 +1,7 @@
 package com.royal.auth.filters;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.royal.auth.Jwt;
+import com.royal.auth.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @Configuration
 public class OAuth2Filter extends OncePerRequestFilter {
     @Autowired
-    private Jwt jwt;
+    private JwtService jwtService;
 
     private final AntPathRequestMatcher[] publicEndpointMatchers = {
             new AntPathRequestMatcher("/register"),
@@ -46,8 +46,8 @@ public class OAuth2Filter extends OncePerRequestFilter {
     }
 
     private void filterRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Optional<JWTClaimsSet> claims = jwt.tryGetClaims(request);
-        if (claims.isPresent() && jwt.tokenIsExpired(claims.get())) {
+        Optional<JWTClaimsSet> claims = jwtService.tryGetClaims(request);
+        if (claims.isPresent() && jwtService.tokenIsExpired(claims.get())) {
             int errorCode = HttpStatus.UNAUTHORIZED.value();
             String message = "Google authentication has expired, please authenticate through Google again.";
             response.sendError(errorCode, message);

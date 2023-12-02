@@ -1,12 +1,15 @@
 package com.royal.services;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.royal.auth.Jwt;
+import com.nimbusds.jwt.SignedJWT;
+import com.royal.auth.JwtService;
 import com.royal.errors.http.IllegalUserCredentialsException;
 import com.royal.errors.http.IncorrectUserPasswordException;
 import com.royal.errors.http.UserAlreadyExistsException;
 import com.royal.errors.http.UserDoesNotExistException;
 import com.royal.models.CartPair;
+import com.royal.models.users.AuthenticatedUserDetails;
+import com.royal.models.users.LoginUserCredentials;
 import com.royal.models.users.PublicUserDetails;
 import com.royal.models.users.User;
 import com.royal.models.products.ElectronicProduct;
@@ -19,11 +22,9 @@ import org.springframework.stereotype.Service;
 
 import javax.management.AttributeNotFoundException;
 import java.io.IOException;
-import java.util.Date;
+import java.util.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,25 +35,29 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private Jwt jwt;
+    private JwtService jwtService;
 
     private static final String emailRegularExpression =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
-    public PublicUserDetails registerNewUser(String email, String password, boolean rememberMe) throws UserAlreadyExistsException, IllegalUserCredentialsException, Exception {
-        if (userRepository.existsByEmail(email))
-            throw new UserAlreadyExistsException(email);
-        if (!isValidEmail(email))
-            throw new IllegalUserCredentialsException(email);
+    public PublicUserDetails registerNewUser(AuthenticatedUserDetails user) throws UserAlreadyExistsException, IllegalUserCredentialsException, Exception {
+        if (userRepository.existsByEmail(user.getEmail()))
+            throw new UserAlreadyExistsException(user.getEmail());
+        if (!isValidEmail(user.getEmail()))
+            throw new IllegalUserCredentialsException(user.getEmail());
 
         User newResisteredUser = new User();
-        newResisteredUser.setEmail(email);
-        newResisteredUser.setPassword(passwordEncoder.encode(password));
+        newResisteredUser.setEmail(user.getEmail());
+        newResisteredUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        newResisteredUser.setPhoto(user.getProfilePicture());
+        newResisteredUser.setRoles(user.getRoles());
         userRepository.save(newResisteredUser);
+
         PublicUserDetails details = newResisteredUser.getPublicDetails();
-        int durationInMinutes = rememberMe ? 2 * 64 : 30;
+        int durationInMinutes = user.isRememberMe() ? 2 * 64 : 30;
         Date expiration = Date.from(Instant.now().plus(durationInMinutes, ChronoUnit.MINUTES));
-        details.setToken(jwt.generateJwtToken(email, expiration));
+        SignedJWT jwt = jwtService.generateJwtToken(user.getEmail(), expiration, user.isRememberMe());
+        details.setToken(jwt.serialize());
         return details;
     }
 
@@ -62,11 +67,11 @@ public class UserService {
         return matcher.matches();
     }
 
-    public PublicUserDetails loginExistingUser(String email, String rawPassword) throws IncorrectUserPasswordException, UserDoesNotExistException {
-        User userInDatabase = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserDoesNotExistException(email));
-        if (!passwordEncoder.matches(rawPassword, userInDatabase.getPassword()))
-            throw new IncorrectUserPasswordException(rawPassword);
+    public PublicUserDetails loginExistingUser(LoginUserCredentials credentials) throws IncorrectUserPasswordException, UserDoesNotExistException {
+        User userInDatabase = userRepository.findByEmail(credentials.getEmail())
+                .orElseThrow(() -> new UserDoesNotExistException(credentials.getEmail()));
+        if (!passwordEncoder.matches(credentials.getPassword(), userInDatabase.getPassword()))
+            throw new IncorrectUserPasswordException(credentials.getPassword());
         return userInDatabase.getPublicDetails();
     }
 

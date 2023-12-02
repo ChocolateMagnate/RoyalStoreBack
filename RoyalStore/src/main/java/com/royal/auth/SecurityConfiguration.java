@@ -41,22 +41,7 @@ public class SecurityConfiguration {
                 .httpBasic(withDefaults());
         return http.build();
     }
-/*
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        var cors = new CorsConfiguration();
-        cors.setAllowCredentials(true);
-        cors.setAllowedOrigins(List.of("http://localhost:3000"));
-        cors.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE"));
-        cors.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Headers",
-                "Access-Control-Allow-Origin","Access-Control-Request-Method",
-                "Access-Control-Request-Headers","Origin","Cache-Control",
-                "Content-Type", "Authorization"));
-        var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", cors);
-        return source;
-    }
-*/
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
@@ -74,8 +59,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public Jwt jwt() {
-        return new Jwt(jwtSingingKey);
+    public JwtService jwt() {
+        return new JwtService(jwtSingingKey);
     }
 
     @Bean

@@ -12,29 +12,29 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
-public class Jwt {
+public class JwtService {
     private final String jwtSingingKey;
 
-    public Jwt(@Value("${jwt.secret}") String jwtSingingKey) {
+    public JwtService(@Value("${jwt.secret}") String jwtSingingKey) {
         this.jwtSingingKey = jwtSingingKey;
     }
 
-    public static boolean isJwtRequest(HttpServletRequest request) {
+
+    public static boolean isJwtRequest(@NotNull HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         return authorization != null && authorization.startsWith("Bearer ");
     }
 
-    public static String getJwtToken(HttpServletRequest request) throws JwtNotPresentException {
-        String header =  request.getHeader("Authorization");
-        if (header == null) throw new JwtNotPresentException();
-        return header.substring(7);
+    public static @NotNull String getJwtToken(@NotNull HttpServletRequest request) throws JwtNotPresentException {
+        if (!isJwtRequest(request)) throw new JwtNotPresentException();
+        return request.getHeader("Authorization").substring(7);
     }
 
     public Optional<JWTClaimsSet> tryGetClaims(HttpServletRequest request) {
@@ -60,31 +60,42 @@ public class Jwt {
 
     public boolean tokenIsExpired(@NotNull JWTClaimsSet claims) {
         Instant now = Instant.now();
-        var rememberMe = (boolean)claims.getClaim("remember-me");
+        var rememberMe = (boolean)claims.getClaim("rememberMe");
         int durationInMinutes = (rememberMe) ? 2 * 60 : 30;
         Instant issuedAt = claims.getIssueTime().toInstant();
         Instant expiration = issuedAt.plus(durationInMinutes, ChronoUnit.MINUTES);
         return expiration.isAfter(now);
     }
 
-    public String generateJwtToken(String username, Date expiration) throws Exception {
+    public SignedJWT generateJwtToken(String subject, Date expiration,
+                                      boolean rememberMe) throws JOSEException, NoSuchAlgorithmException {
         KeyPair pair = generateKeyPair();
         JWSSigner signer = new RSASSASigner(pair.getPrivate());
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(subject)
                 .issuer("http://localhost")
                 .expirationTime(expiration)
-                .claim("name", "John Doe")
+                .claim("rememberMe", rememberMe)
                 .build();
 
         SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("kid").build(), claimsSet);
         signedJWT.sign(signer);
-        return signedJWT.serialize();
+        return signedJWT;
     }
 
-    private static KeyPair generateKeyPair() throws Exception {
+    public SignedJWT regenerateExpiringJwtToken(JWTClaimsSet claims) throws Exception {
+        if (tokenIsExpired(claims)) return null;
+        String subject = claims.getSubject();
+        var rememberMe = (boolean)claims.getClaim("remember-me");
+        int durationInMinutes = (rememberMe) ? 2 * 60 : 30;
+        Instant issuedAt = claims.getIssueTime().toInstant();
+        Instant newExpirationTime = issuedAt.plus(durationInMinutes, ChronoUnit.MINUTES);
+        return generateJwtToken(subject, Date.from(newExpirationTime), rememberMe);
+    }
+
+    private static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048); // You may choose a different key size
+        keyPairGenerator.initialize(2048);
         return keyPairGenerator.generateKeyPair();
     }
 }
