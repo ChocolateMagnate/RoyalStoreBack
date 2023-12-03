@@ -1,18 +1,15 @@
 package com.royal.models.products;
 
-import com.royal.models.products.enumerations.*;
+import com.royal.models.products.enumerations.DesktopBrand;
+import com.royal.models.products.enumerations.DesktopOS;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.util.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 @Getter
 @Setter

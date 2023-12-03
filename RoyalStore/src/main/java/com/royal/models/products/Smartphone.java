@@ -1,14 +1,13 @@
 package com.royal.models.products;
 
-import com.royal.models.products.enumerations.*;
+import com.royal.models.products.enumerations.MobileBrand;
+import com.royal.models.products.enumerations.MobileOS;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.util.Pair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @Getter

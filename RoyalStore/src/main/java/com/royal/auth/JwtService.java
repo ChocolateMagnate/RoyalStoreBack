@@ -88,7 +88,7 @@ public class JwtService {
             return signedJWT;
         } catch (JOSEException e) {
             throw new HttpException(HttpStatus.UNAUTHORIZED,
-                    "JWT token could not be signed with " + signer.toString());
+                    "JWT token could not be signed with " + signer);
         }
     }
 
