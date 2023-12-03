@@ -17,12 +17,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PutMapping(value = "/register", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
     public PublicUserDetails register(@RequestBody AuthenticatedUserDetails user) throws HttpException {
         return userService.registerNewUser(user);
     }
 
-    @GetMapping(value = "/login", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public PublicUserDetails login(@RequestBody LoginUserCredentials credentials) throws HttpException {
         return userService.loginExistingUser(credentials);
     }

@@ -3,7 +3,6 @@ package com.royal.services;
 import com.royal.errors.HttpException;
 import com.royal.models.products.Smartphone;
 import com.royal.repositories.SmartphoneRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -11,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,12 +47,6 @@ public class SmartphoneService {
         extractedSmartphone.setBrand(updatedSmartphone.getBrand());
         extractedSmartphone.setPrice(updatedSmartphone.getPrice());
         extractedSmartphone.setMemory(updatedSmartphone.getMemory());
-        extractedSmartphone.setMaterial(updatedSmartphone.getMaterial());
-        extractedSmartphone.setDiagonal(updatedSmartphone.getDiagonal());
-        extractedSmartphone.setProcessor(updatedSmartphone.getProcessor());
-        extractedSmartphone.setResolution(updatedSmartphone.getResolution());
-        extractedSmartphone.setConnectivities(updatedSmartphone.getConnectivities());
-        extractedSmartphone.setBatteryCapacityMAH(updatedSmartphone.getBatteryCapacityMAH());
         smartphoneRepository.save(extractedSmartphone);
     }
 

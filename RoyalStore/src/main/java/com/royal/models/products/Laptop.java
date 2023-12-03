@@ -1,6 +1,7 @@
 package com.royal.models.products;
 
 import com.royal.models.products.enumerations.*;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -15,33 +16,30 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Nullable
 @AllArgsConstructor
 @Document(collection = "laptops")
 public class Laptop implements ElectronicProduct {
     @Id
     private String id;
-    private float price;
-    private int memory;
-    private int storage;
-    private int weight;
-    private Processor processor;
-    private BuildMaterial buildMaterial;
-    private byte[] photo;
-    private String description;
+    private String model;
     private DesktopBrand brand;
+    private float price;
+    private byte[] photo;
     private DesktopOS os;
-    private GraphicsCard card;
-    private Float diagonal;
-    private Pair<Integer, Integer> resolution;
-    private Set<Connectivity> connectivities;
+    private int memory;
+    private String description;
 
     public HashMap<String, Object> asHashMap() {
         HashMap<String, Object> descriptor = new HashMap<>(13);
-        descriptor.put("connectivities", connectivities);
-        descriptor.put("resolution", resolution);
-        descriptor.put("diagonal", diagonal);
+        descriptor.put("id", id);
+        descriptor.put("model", model);
         descriptor.put("brand", brand);
-        descriptor.put("card", card);
+        descriptor.put("price", price);
+        descriptor.put("photo", photo);
+        descriptor.put("os", os);
+        descriptor.put("memory", memory);
+        descriptor.put("description", description);
         return descriptor;
     }
 }

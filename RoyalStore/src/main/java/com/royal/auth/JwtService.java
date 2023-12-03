@@ -67,7 +67,7 @@ public class JwtService {
         int durationInMinutes = (rememberMe) ? 2 * 60 : 30;
         Instant issuedAt = claims.getIssueTime().toInstant();
         Instant expiration = issuedAt.plus(durationInMinutes, ChronoUnit.MINUTES);
-        return expiration.isAfter(now);
+        return now.isAfter(expiration);
     }
 
     public SignedJWT generateJwtToken(String subject, boolean rememberMe) throws HttpException {
@@ -76,9 +76,10 @@ public class JwtService {
         Date expiration = getExpirationTime(Instant.now(), rememberMe);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(subject)
-                .issuer("http://localhost")
+                .issuer("http://localhost:8080")
                 .expirationTime(expiration)
                 .claim("rememberMe", rememberMe)
+                .issueTime(new Date())
                 .build();
 
         try {

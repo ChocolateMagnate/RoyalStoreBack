@@ -11,6 +11,7 @@ import com.royal.models.users.User;
 import com.royal.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,11 @@ public class UserService {
         SignedJWT jwt = jwtService.generateJwtToken(credentials.getEmail(), credentials.isRememberMe());
         details.setToken(jwt.serialize());
         return details;
+    }
+
+    public User loadUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new UsernameNotFoundException("User by email " + email + " does not exist."));
     }
 
     public ArrayList<ElectronicProduct> getAllElementsInCart(String subject) throws HttpException {

@@ -3,12 +3,14 @@ package com.royal.controllers;
 import com.royal.errors.HttpException;
 import com.royal.models.products.Smartphone;
 import com.royal.services.SmartphoneService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Log4j2
 @RestController
 public class SmartphoneController {
     @Autowired
@@ -19,8 +21,9 @@ public class SmartphoneController {
         return smartphoneService.getAllSmartphonesByParameters(soughtSmartphone.asHashMap());
     }
 
-    @PutMapping("/create-smartphone")
+    @PostMapping("/create-smartphone")
     public void createSmartphone(@RequestBody Smartphone newSmartphone) throws HttpException {
+        log.info("Created smartphone: " + newSmartphone.toString());
         smartphoneService.createSmartphone(newSmartphone);
     }
 

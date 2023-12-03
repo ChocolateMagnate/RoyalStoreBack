@@ -5,18 +5,22 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 @Getter
 @Setter
 @Document(collection = "users")
-public class User {
+public class User implements UserDetails {
     private String username;
     private String password;
     private String email;
     private byte[] photo;
-    private ArrayList<String> roles;
+    private ArrayList<SimpleGrantedAuthority> roles;
     private ArrayList<ElectronicProduct> cart;
 
     public PublicUserDetails getPublicDetails() {
@@ -33,5 +37,30 @@ public class User {
         roles = details.getRoles();
         username = details.getUsername();
         photo = details.getProfilePicture();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

@@ -44,17 +44,11 @@ public class LaptopService {
             throw new HttpException(HttpStatus.NOT_FOUND, "The laptop by ID " + id + " does not exist.");
         Laptop extractedLaptop = laptopInDatabase.get();
         extractedLaptop.setOs(updatedLaptop.getOs());
-        extractedLaptop.setCard(updatedLaptop.getCard());
         extractedLaptop.setBrand(updatedLaptop.getBrand());
         extractedLaptop.setPhoto(updatedLaptop.getPhoto());
         extractedLaptop.setPrice(updatedLaptop.getPrice());
         extractedLaptop.setMemory(updatedLaptop.getMemory());
-        extractedLaptop.setStorage(updatedLaptop.getStorage());
-        extractedLaptop.setProcessor(updatedLaptop.getProcessor());
-        extractedLaptop.setResolution(updatedLaptop.getResolution());
         extractedLaptop.setDescription(updatedLaptop.getDescription());
-        extractedLaptop.setBuildMaterial(updatedLaptop.getBuildMaterial());
-        extractedLaptop.setConnectivities(updatedLaptop.getConnectivities());
         laptopRepository.save(extractedLaptop);
     }
 
