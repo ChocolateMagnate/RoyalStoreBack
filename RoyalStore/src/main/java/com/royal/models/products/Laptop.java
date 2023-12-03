@@ -2,8 +2,6 @@ package com.royal.models.products;
 
 import com.royal.models.products.enumerations.DesktopBrand;
 import com.royal.models.products.enumerations.DesktopOS;
-import jakarta.annotation.Nullable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -13,8 +11,6 @@ import java.util.HashMap;
 
 @Getter
 @Setter
-@Nullable
-@AllArgsConstructor
 @Document(collection = "laptops")
 public class Laptop implements ElectronicProduct {
     @Id
@@ -26,6 +22,7 @@ public class Laptop implements ElectronicProduct {
     private DesktopOS os;
     private int memory;
     private String description;
+    private long itemsInStock;
 
     public HashMap<String, Object> asHashMap() {
         HashMap<String, Object> descriptor = new HashMap<>(13);
@@ -37,6 +34,7 @@ public class Laptop implements ElectronicProduct {
         descriptor.put("os", os);
         descriptor.put("memory", memory);
         descriptor.put("description", description);
+        descriptor.put("itemsInStock", itemsInStock);
         return descriptor;
     }
 }

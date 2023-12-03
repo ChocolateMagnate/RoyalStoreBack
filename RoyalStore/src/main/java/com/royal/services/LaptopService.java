@@ -2,16 +2,15 @@ package com.royal.services;
 
 import com.royal.errors.HttpException;
 import com.royal.models.products.Laptop;
+import com.royal.models.products.LaptopSearchFilter;
 import com.royal.repositories.LaptopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,20 +21,23 @@ public class LaptopService {
     @Autowired
     private MongoTemplate template;
 
-    public List<Laptop> getAllLaptopsByParameters(HashMap<String, Object> soughtLaptop) {
-        Criteria criteria = new Criteria();
-        for (String key : soughtLaptop.keySet()) {
-            Object value = soughtLaptop.get(key);
-            if (value != null) criteria.and(key).is(value);
-        }
-        Query customisedVariableParameterQuery = new Query(criteria);
-        return template.find(customisedVariableParameterQuery, Laptop.class);
+    public List<Laptop> getAllLaptopsByParameters(LaptopSearchFilter filter) {
+        Query query = filter.getSearchQuery();
+        return template.find(query, Laptop.class);
     }
 
-    public void createNewLaptop(Laptop newLaptop) throws HttpException {
-        if (laptopRepository.exists(Example.of(newLaptop)))
-            throw new HttpException(HttpStatus.FOUND, "The same laptop already exists.");
-        laptopRepository.save(newLaptop);
+    public List<Laptop> getRandomLaptops() {
+        return laptopRepository.findAll().stream().limit(20).toList();
+    }
+
+    public void createNewLaptop(Laptop newLaptop) {
+        Optional<Laptop> targetLaptop = laptopRepository.findOne(Example.of(newLaptop));
+        if (targetLaptop.isEmpty()) laptopRepository.save(newLaptop);
+        else {
+            Laptop updatedLaptop = targetLaptop.get();
+            updatedLaptop.setItemsInStock(updatedLaptop.getItemsInStock() + 1);
+            laptopRepository.save(updatedLaptop);
+        }
     }
 
     public void updateLaptopById(String id, Laptop updatedLaptop) throws HttpException {

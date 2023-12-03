@@ -24,18 +24,7 @@ public class Smartphone implements ElectronicProduct {
     private MobileOS os;
     private int memory;
     private String description;
-
-    public HashMap<String, Object> asHashMap() {
-        HashMap<String, Object> descriptor = new HashMap<>(13);
-        descriptor.put("description", description);
-        descriptor.put("memory", memory);
-        descriptor.put("brand", brand);
-        descriptor.put("price", price);
-        descriptor.put("photo", photo);
-        descriptor.put("os", os);
-        descriptor.put("id", id);
-        return descriptor;
-    }
+    private long itemsInStock;
 
     public String toString() {
         return model + " #" + id + " by " + brand +  " running " + os +  ": " + price + "$, "
