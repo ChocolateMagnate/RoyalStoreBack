@@ -56,7 +56,7 @@ public class LaptopService {
 
     public void deleteLaptopById(String id) throws HttpException {
         if (!laptopRepository.existsById(id))
-            throw new HttpException(HttpStatus.NOT_FOUND, "Laotptop by ID " + id + " does not exist.");
+            throw new HttpException(HttpStatus.NOT_FOUND, "Laptop by ID " + id + " does not exist.");
         laptopRepository.deleteById(id);
     }
 }

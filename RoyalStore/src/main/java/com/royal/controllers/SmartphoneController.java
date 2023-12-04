@@ -60,6 +60,7 @@ public class SmartphoneController {
 
     @PostMapping("/update-smartphone/{id}")
     public void updateSmartphone(@PathVariable String id, @RequestBody Smartphone updatedSmartphone) throws HttpException {
+        log.info("Updating a new smartphone: " + updatedSmartphone);
         smartphoneService.updateSmartphoneById(id, updatedSmartphone);
     }
 
