@@ -1,5 +1,6 @@
 package com.royal.services;
 
+import com.google.common.collect.Iterables;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.auth.JwtService;
 import com.royal.errors.HttpException;
@@ -9,6 +10,7 @@ import com.royal.models.users.LoginUserCredentials;
 import com.royal.models.users.PublicUserDetails;
 import com.royal.models.users.User;
 import com.royal.repositories.UserRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,10 +79,36 @@ public class UserService {
     }
 
     public ArrayList<ElectronicProduct> getAllElementsInCart(String subject) throws HttpException {
+        User user = getUserOrThrow(subject);
+        return user.getCart();
+    }
+
+    public void addProductToCart(String email, @NotNull ElectronicProduct product) throws HttpException {
+        User user = getUserOrThrow(email);
+        ArrayList<ElectronicProduct> cart = user.getCart();
+
+        if (cart.contains(product)) {
+            int index = cart.indexOf(product);
+            ElectronicProduct target = cart.get(index);
+            target.setItemsInStock(target.getItemsInStock() + 1);
+        } else cart.add(product);
+        userRepository.save(user);
+    }
+
+    public void deleteProductFromCart(String email, String productId) throws HttpException {
+        User user = getUserOrThrow(email);
+        ArrayList<ElectronicProduct> cart = user.getCart();
+        int index = Iterables.indexOf(cart, product -> Objects.equals(product.getId(), productId));
+        if (index == -1) throw new HttpException(HttpStatus.NOT_FOUND,
+                "No product by id " + productId + " in cart of " + email);
+        cart.remove(index);
+        userRepository.save(user);
+    }
+
+    private User getUserOrThrow(String subject) throws HttpException {
         Optional<User> user = userRepository.findByEmail(subject);
-        if (user.isEmpty())
-            throw new HttpException(HttpStatus.NOT_FOUND, "User by email " + subject + " is not found.");
-        return user.get().getCart();
+        if (user.isPresent()) return user.get();
+        throw new HttpException(HttpStatus.NOT_FOUND, "User by email " + subject + " is not found.");
     }
 
 }

@@ -22,7 +22,7 @@ public class Laptop implements ElectronicProduct {
     private DesktopOS os;
     private int memory;
     private String description;
-    private long itemsInStock;
+    private long itemsInStock = 1;
 
     public HashMap<String, Object> asHashMap() {
         HashMap<String, Object> descriptor = new HashMap<>(13);

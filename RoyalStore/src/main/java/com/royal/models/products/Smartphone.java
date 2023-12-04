@@ -8,8 +8,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
-
 @Getter
 @Setter
 @Nullable
@@ -24,7 +22,7 @@ public class Smartphone implements ElectronicProduct {
     private MobileOS os;
     private int memory;
     private String description;
-    private long itemsInStock;
+    private long itemsInStock = 1;
 
     public String toString() {
         return model + " #" + id + " by " + brand +  " running " + os +  ": " + price + "$, "

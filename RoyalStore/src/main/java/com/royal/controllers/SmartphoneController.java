@@ -33,12 +33,12 @@ public class SmartphoneController {
 
     @PostMapping(value = "/create-smartphone", consumes = "multipart/form-data")
     public String createSmartphone(@RequestParam("model") String model,
-                                  @RequestParam("brand") String brand,
-                                  @RequestParam("price") float price,
-                                  @RequestParam("photo") MultipartFile photo,
-                                  @RequestParam("os") String os,
-                                  @RequestParam("memory") int memory,
-                                  @RequestParam("description") String description) throws HttpException {
+                                   @RequestParam("brand") String brand,
+                                   @RequestParam("price") float price,
+                                   @RequestParam("photo") MultipartFile photo,
+                                   @RequestParam("os") String os,
+                                   @RequestParam("memory") int memory,
+                                   @RequestParam("description") String description) throws HttpException {
         try {
             var newSmartphone = new Smartphone();
             newSmartphone.setModel(model);

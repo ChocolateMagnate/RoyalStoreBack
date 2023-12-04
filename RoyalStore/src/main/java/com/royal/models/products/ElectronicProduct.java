@@ -1,11 +1,19 @@
 package com.royal.models.products;
 
-import com.royal.models.products.enumerations.BuildMaterial;
-import com.royal.models.products.enumerations.Processor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-
 public interface ElectronicProduct {
+    String getId();
+    String getModel();
+    float getPrice();
+    byte[] getPhoto();
+    int getMemory();
+    String getDescription();
+    long getItemsInStock();
 
+    void setId(String id);
+    void setModel(String model);
+    void setPrice(float price);
+    void setPhoto(byte[] photo);
+    void setMemory(int memory);
+    void setDescription(String description);
+    void setItemsInStock(long itemsInStock);
 }

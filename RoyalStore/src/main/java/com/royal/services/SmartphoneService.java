@@ -44,7 +44,7 @@ public class SmartphoneService {
     public void updateSmartphoneById(String id, Smartphone updatedSmartphone) throws HttpException {
         Optional<Smartphone> smartphoneInDatabase = smartphoneRepository.findById(id);
         if (smartphoneInDatabase.isEmpty())
-            throw new HttpException(HttpStatus.NOT_FOUND, "Smartphone by ID " + id + " already exists.");
+            throw new HttpException(HttpStatus.NOT_FOUND, "Smartphone by ID " + id + " doesn't exists.");
         Smartphone extractedSmartphone = smartphoneInDatabase.get();
         extractedSmartphone.setOs(updatedSmartphone.getOs());
         extractedSmartphone.setBrand(updatedSmartphone.getBrand());
