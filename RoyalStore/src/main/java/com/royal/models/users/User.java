@@ -1,6 +1,6 @@
 package com.royal.models.users;
 
-import com.royal.models.products.ElectronicProduct;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class User implements UserDetails {
     private String password;
     private byte[] photo;
     private ArrayList<String> roles = new ArrayList<>();
-    private ArrayList<ElectronicProduct> cart = new ArrayList<>();
+    private ArrayList<String> cart = new ArrayList<>();
 
     public PublicUserDetails getPublicDetails() {
         var details = new PublicUserDetails();

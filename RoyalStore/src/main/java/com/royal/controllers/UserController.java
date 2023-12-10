@@ -1,9 +1,8 @@
 package com.royal.controllers;
 
 import com.royal.errors.HttpException;
+import com.royal.models.products.CartProductReference;
 import com.royal.models.products.ElectronicProduct;
-import com.royal.models.products.Laptop;
-import com.royal.models.products.Smartphone;
 import com.royal.models.users.AuthenticatedUserDetails;
 import com.royal.models.users.LoginUserCredentials;
 import com.royal.models.users.PublicUserDetails;
@@ -32,18 +31,12 @@ public class UserController {
 
     @GetMapping("/get-cart")
     public ArrayList<ElectronicProduct> getAllCartItems(@RequestParam("email") String email) throws HttpException {
-        log.info("Requested email: " + email);
         return userService.getAllElementsInCart(email);
     }
 
-    @PutMapping("/add-laptop-to-cart")
-    public void addToCart(@RequestParam("email") String email, @RequestBody Laptop product) throws HttpException {
-        userService.addProductToCart(email, product);
-    }
-
-    @PutMapping("/add-smartphone-to-cart")
-    public void addToCart(@RequestParam("email") String email, @RequestBody Smartphone product) throws HttpException {
-        userService.addProductToCart(email, product);
+    @PutMapping("/add-product-to-cart")
+    public void addToCart(@RequestBody CartProductReference product) throws HttpException {
+        userService.addProductToCart(product);
     }
 
     @DeleteMapping("/remove-from-cart")
@@ -51,5 +44,4 @@ public class UserController {
                                @RequestParam("id") String productId) throws HttpException {
         userService.deleteProductFromCart(email, productId);
     }
-
 }
