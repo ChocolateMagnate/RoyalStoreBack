@@ -1,4 +1,4 @@
-package com.royal.errors.jwt;
+package com.royal.errors;
 
 import com.royal.errors.HttpException;
 import lombok.Getter;

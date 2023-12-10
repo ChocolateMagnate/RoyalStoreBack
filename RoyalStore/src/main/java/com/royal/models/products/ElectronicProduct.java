@@ -9,11 +9,10 @@ public interface ElectronicProduct {
     String getDescription();
     long getItemsInStock();
 
-    void setId(String id);
     void setModel(String model);
     void setPrice(float price);
     void setPhoto(byte[] photo);
     void setMemory(int memory);
     void setDescription(String description);
-    void setItemsInStock(long itemsInStock);
+    void setItemsInStock(long items);
 }

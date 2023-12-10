@@ -30,9 +30,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    @Value("${jwt.secret-key}")
-    private String jwtSingingKey;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -81,7 +78,7 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtService jwt() {
-        return new JwtService(jwtSingingKey);
+        return new JwtService();
     }
 
     @Bean

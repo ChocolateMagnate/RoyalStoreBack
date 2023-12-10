@@ -16,12 +16,12 @@ public class Laptop implements ElectronicProduct {
     @Id
     private String id;
     private String model;
+    private String description;
     private DesktopBrand brand;
+    private DesktopOS os;
     private float price;
     private byte[] photo;
-    private DesktopOS os;
     private int memory;
-    private String description;
     private long itemsInStock = 1;
 
     public HashMap<String, Object> asHashMap() {

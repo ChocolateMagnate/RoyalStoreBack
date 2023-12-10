@@ -6,7 +6,7 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.errors.HttpException;
-import com.royal.errors.jwt.JwtNotPresentException;
+import com.royal.errors.JwtNotPresentException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
@@ -23,11 +23,8 @@ import java.util.Date;
 import java.util.Optional;
 
 public class JwtService {
-    private final String jwtSingingKey;
-
-    public JwtService(@Value("${jwt.secret}") String jwtSingingKey) {
-        this.jwtSingingKey = jwtSingingKey;
-    }
+    @Value("${JWT_SINGING_KEY}")
+    private String jwtSingingKey;
 
 
     public static boolean isJwtRequest(@NotNull HttpServletRequest request) {

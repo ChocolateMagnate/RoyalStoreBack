@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:4-focal
+    container_name: database
+    hostname: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - royal-store-network
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+
+  royal-store:
+    build: .
+    container_name: royal-store
+    ports:
+      - "8080:8080"
+    networks:
+      - royal-store-network
+    environment:
+      MONGODB_URI: ${MONGODB_URL}
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+      JWT_SINGING_KEY: ${JWT_SINGING_KEY}
+    depends_on:
+      - mongodb
+
+networks:
+  royal-store-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:

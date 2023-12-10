@@ -1,4 +1,10 @@
 spring:
+  data:
+    mongodb:
+      host: mongodb
+      database: store
+      authentication-database: store
+      uri: ${MONGODB_URI}
   security:
     oauth2:
       client:
@@ -18,6 +24,3 @@ logging:
     org:
       springframework:
         security: DEBUG
-
-jwt:
-  secret-key: EH5Rnxg9KsdSu283ruRGtHaS2qNUCxhc
