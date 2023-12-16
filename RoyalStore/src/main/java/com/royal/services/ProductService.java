@@ -1,18 +1,14 @@
 package com.royal.services;
 
-import com.royal.errors.HttpException;
 import com.royal.models.products.ElectronicProduct;
 import com.royal.models.products.Laptop;
 import com.royal.models.products.Smartphone;
-import com.royal.models.users.User;
 import com.royal.repositories.LaptopRepository;
 import com.royal.repositories.SmartphoneRepository;
-import com.royal.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,8 +22,6 @@ public class ProductService {
     private LaptopRepository laptopRepository;
     @Autowired
     private SmartphoneRepository smartphoneRepository;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private MongoTemplate template;
 
@@ -58,10 +52,12 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ElectronicProduct> getUserCart(String email) throws HttpException {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new HttpException(HttpStatus.NOT_FOUND, "User by email " + email + " does not exist."));
-        return retrieveProductsFromIds(user.getCart());
+    public Optional<ElectronicProduct> retrieveProductById(String id) {
+        Optional<Laptop> optionalLaptop = laptopRepository.findById(id);
+        if (optionalLaptop.isPresent()) return Optional.of(optionalLaptop.get());
+        Optional<Smartphone> optionalSmartphone = smartphoneRepository.findById(id);
+        if (optionalSmartphone.isPresent()) return Optional.of(optionalSmartphone.get());
+        return Optional.empty();
     }
 
     public ArrayList<ElectronicProduct> retrieveProductsFromIds(@NotNull ArrayList<String> ids) {

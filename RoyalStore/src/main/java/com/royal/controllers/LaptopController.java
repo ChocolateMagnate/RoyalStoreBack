@@ -2,7 +2,7 @@ package com.royal.controllers;
 
 import com.royal.errors.HttpException;
 import com.royal.models.products.Laptop;
-import com.royal.models.products.LaptopSearchFilter;
+import com.royal.models.products.search.LaptopSearchFilter;
 import com.royal.models.products.enumerations.DesktopBrand;
 import com.royal.models.products.enumerations.DesktopOS;
 import com.royal.services.LaptopService;

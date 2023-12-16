@@ -7,21 +7,22 @@ import com.royal.errors.HttpException;
 import com.royal.models.users.User;
 import com.royal.services.UserService;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Optional;
 
+@Log4j2
 public class EmailAndPasswordLoginFilter extends OncePerRequestFilter {
     @Autowired
     private JwtService jwtService;
@@ -30,7 +31,7 @@ public class EmailAndPasswordLoginFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
-                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
+                                    @NotNull FilterChain filterChain) throws IOException {
         try {
             boolean shouldContinue = filterRequest(request, response);
             if (shouldContinue) filterChain.doFilter(request, response);
@@ -44,9 +45,11 @@ public class EmailAndPasswordLoginFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NotNull HttpServletRequest request) {
-        if (SecurityContextHolder.getContext() != null) return true;
+        logger.trace("Running shouldNotFilter in EmailAndPasswordLoginFilter");
         String authorization = request.getHeader("Authorization");
-        return authorization == null;
+        if (authorization == null) return true;
+        Authentication claimedUser = SecurityContextHolder.getContext().getAuthentication();
+        return claimedUser != null && claimedUser.isAuthenticated();
     }
 
     private boolean filterRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -58,7 +61,7 @@ public class EmailAndPasswordLoginFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             SignedJWT jwt = this.jwtService.regenerateExpiringJwtToken(jwtClaimsSet.get());
             response.setHeader("Authorization", "Bearer " + jwt.serialize());
-            logger.info("Refreshed a JWT token.");
+            log.info("Refreshed a JWT token.");
             return true;
         } else {
             logger.info("Rejected request with invalid JWT token from email and password filter.");

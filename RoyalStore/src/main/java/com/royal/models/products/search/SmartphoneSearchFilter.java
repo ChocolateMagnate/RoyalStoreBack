@@ -1,32 +1,30 @@
-package com.royal.models.products;
+package com.royal.models.products.search;
 
-import org.jetbrains.annotations.NotNull;
+import com.royal.models.products.enumerations.MobileBrand;
+import com.royal.models.products.enumerations.MobileOS;
+import lombok.Getter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-
-public class ElectronicProductSearchFilter {
-    private String model;
+@Getter
+public class SmartphoneSearchFilter {
     private Integer lowerPriceBond;
     private Integer upperPriceBond;
     private Integer lowerMemoryBond;
     private Integer upperMemoryBond;
-    private byte[] photo;
+    private MobileBrand brand;
+    private MobileOS os;
+    private String model;
 
     public Query getSearchQuery() {
-        Criteria criteria = getCriteria();
-        return new Query(criteria);
-    }
-
-    @NotNull
-    protected Criteria getCriteria() {
-        Criteria criteria = new Criteria();
+        var criteria = new Criteria();
         if (lowerPriceBond != null) criteria.and("price").gte(lowerMemoryBond);
         if (upperPriceBond != null) criteria.and("price").lte(upperMemoryBond);
         if (lowerMemoryBond != null) criteria.and("memory").gte(lowerMemoryBond);
         if (upperMemoryBond != null) criteria.and("memory").lte(upperMemoryBond);
+        if (brand != null) criteria.and("brand").is(brand);
+        if (os != null) criteria.and("os").is(os);
         if (model != null) criteria.and("model").is(model);
-        if (photo != null) criteria.and("photo").is(photo);
-        return criteria;
+        return new Query(criteria);
     }
 }

@@ -2,7 +2,7 @@ package com.royal.services;
 
 import com.royal.errors.HttpException;
 import com.royal.models.products.Laptop;
-import com.royal.models.products.LaptopSearchFilter;
+import com.royal.models.products.search.LaptopSearchFilter;
 import com.royal.repositories.LaptopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;

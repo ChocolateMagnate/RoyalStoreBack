@@ -4,13 +4,15 @@ import com.google.common.collect.Iterables;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.auth.JwtService;
 import com.royal.errors.HttpException;
-import com.royal.models.products.CartProductReference;
 import com.royal.models.products.ElectronicProduct;
+import com.royal.models.products.enumerations.ProductStorage;
 import com.royal.models.users.AuthenticatedUserDetails;
 import com.royal.models.users.LoginUserCredentials;
 import com.royal.models.users.PublicUserDetails;
 import com.royal.models.users.User;
 import com.royal.repositories.UserRepository;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Log4j2
 @Service
 public class UserService {
     @Autowired
@@ -67,7 +70,8 @@ public class UserService {
 
     public PublicUserDetails loginExistingUser(@NotNull LoginUserCredentials credentials) throws HttpException {
         User userInDatabase = userRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new HttpException(HttpStatus.FOUND, "User by email " + credentials.getEmail() + " already exists."));
+                .orElseThrow(() -> new HttpException(HttpStatus.FOUND,
+                        "User by email " + credentials.getEmail() + " already exists."));
         if (!passwordEncoder.matches(credentials.getPassword(), userInDatabase.getPassword()))
             throw new HttpException(HttpStatus.BAD_REQUEST, "Incorrect password for " + userInDatabase.getEmail());
         PublicUserDetails details = userInDatabase.getPublicDetails();
@@ -81,37 +85,55 @@ public class UserService {
                 new UsernameNotFoundException("User by email " + email + " does not exist."));
     }
 
-    public ArrayList<ElectronicProduct> getAllElementsInCart(String subject) throws HttpException {
-        ArrayList<String> cart = getUserOrThrow(subject).getCart();
-        return productService.retrieveProductsFromIds(cart);
+    public ArrayList<ElectronicProduct> getProducts(String email, ProductStorage storage) throws HttpException {
+        User user = getUserOrThrow404(email);
+        ArrayList<String> ids = getIdsFromUser(storage, user);
+        return productService.retrieveProductsFromIds(ids);
     }
 
-    public void addProductToCart(@NotNull CartProductReference description) throws HttpException {
-        User user = getUserOrThrow(description.getEmail());
-        String id = description.getProductId();
-        if (!productService.productExistsById(id))
-            throw new HttpException(HttpStatus.NOT_FOUND, "No product under id " + id);
-        ArrayList<String> cart = user.getCart();
-        if (cart.stream().filter(productId ->
-                Objects.equals(productId, id)).toList().isEmpty())
-            cart.add(description.getProductId());
+    public void insertProduct(String email, String productId, ProductStorage storage) throws HttpException {
+        User user = getUserOrThrow404(email);
+        if (!productService.productExistsById(productId))
+            throw new HttpException(HttpStatus.NOT_FOUND, "No product under id " + productId);
+        ArrayList<String> ids = getIdsFromUser(storage, user);
+        if (!ids.contains(productId)) ids.add(productId);
         userRepository.save(user);
     }
 
-    public void deleteProductFromCart(String email, String deletedProductId) throws HttpException {
-        User user = getUserOrThrow(email);
-        ArrayList<String> cart = user.getCart();
-        int index = Iterables.indexOf(cart, productId -> Objects.equals(productId, deletedProductId));
+    public void deleteProduct(String email, String deletedProductId, ProductStorage storage) throws HttpException {
+        User user = getUserOrThrow404(email);
+        ArrayList<String> ids = getIdsFromUser(storage, user);
+        int index = Iterables.indexOf(ids, productId -> Objects.equals(productId, deletedProductId));
         if (index == -1) throw new HttpException(HttpStatus.NOT_FOUND,
-                "No product by id " + deletedProductId + " in cart of " + email);
-        cart.remove(index);
+                "No product by id " + deletedProductId + " is associated with " + email);
+        ids.remove(index);
         userRepository.save(user);
     }
 
-    private @NotNull User getUserOrThrow(String subject) throws HttpException {
-        Optional<User> user = userRepository.findByEmail(subject);
+    public void purchase(String email, String productId) throws HttpException {
+        User user = getUserOrThrow404(email);
+        ArrayList<String> purchased = user.getPurchased(), cart = user.getCart();
+        if (!purchased.contains(productId)) purchased.add(productId);
+        cart.remove(productId);
+        user.setPurchased(purchased);
+        user.setCart(cart);
+        userRepository.save(user);
+    }
+
+    private @NotNull User getUserOrThrow404(String email) throws HttpException {
+        Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) return user.get();
-        throw new HttpException(HttpStatus.NOT_FOUND, "User by email " + subject + " is not found.");
+        log.trace("User not found: " + email);
+        throw new HttpException(HttpStatus.NOT_FOUND, "User by email " + email + " is not found.");
+    }
+
+    @Contract(pure = true)
+    private ArrayList<String> getIdsFromUser(@NotNull ProductStorage storage, User user) {
+        return switch (storage) {
+            case Cart -> user.getCart();
+            case Liked -> user.getLiked();
+            case Purchased -> user.getPurchased();
+        };
     }
 
 }

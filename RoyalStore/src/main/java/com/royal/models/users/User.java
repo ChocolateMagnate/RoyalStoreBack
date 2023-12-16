@@ -24,6 +24,8 @@ public class User implements UserDetails {
     private byte[] photo;
     private ArrayList<String> roles = new ArrayList<>();
     private ArrayList<String> cart = new ArrayList<>();
+    private ArrayList<String> liked = new ArrayList<>();
+    private ArrayList<String> purchased = new ArrayList<>();
 
     public PublicUserDetails getPublicDetails() {
         var details = new PublicUserDetails();
@@ -39,6 +41,10 @@ public class User implements UserDetails {
         roles = details.getRoles();
         username = details.getUsername();
         photo = details.getProfilePicture();
+    }
+
+    public String toString() {
+        return username + " aka " + email + ": " + roles;
     }
 
     @Override

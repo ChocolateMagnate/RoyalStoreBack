@@ -3,11 +3,10 @@ package com.royal.auth;
 import com.royal.auth.filters.EmailAndPasswordLoginFilter;
 import com.royal.auth.filters.OAuth2Filter;
 import com.royal.repositories.UserRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,8 +24,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -34,17 +31,17 @@ public class SecurityConfiguration {
     private UserRepository userRepository;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(@NotNull HttpSecurity http) throws Exception {
         http
             .addFilterBefore(emailAndPasswordLoginFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(oAuth2Filter(), UsernamePasswordAuthenticationFilter.class)
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                           .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                           .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                .anyRequest().permitAll())
-                .httpBasic(withDefaults());
+                    .requestMatchers("/register", "/login", "get-random-products").permitAll()
+                    .requestMatchers("/create-smartphone", "/update-smartphone/", "/delete-smartphone/",
+                            "/create-laptop", "/update-laptop/", "delete-laptop/").hasAuthority("admin")
+                    .anyRequest().authenticated());
         return http.build();
     }
 
@@ -61,7 +58,7 @@ public class SecurityConfiguration {
         return provider;
     }
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(@NotNull AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 

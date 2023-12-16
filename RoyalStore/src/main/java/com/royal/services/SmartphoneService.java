@@ -2,7 +2,7 @@ package com.royal.services;
 
 import com.royal.errors.HttpException;
 import com.royal.models.products.Smartphone;
-import com.royal.models.products.SmartphoneSearchFilter;
+import com.royal.models.products.search.SmartphoneSearchFilter;
 import com.royal.repositories.SmartphoneRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

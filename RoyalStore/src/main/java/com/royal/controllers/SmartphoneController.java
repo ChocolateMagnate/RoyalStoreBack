@@ -2,11 +2,12 @@ package com.royal.controllers;
 
 import com.royal.errors.HttpException;
 import com.royal.models.products.Smartphone;
-import com.royal.models.products.SmartphoneSearchFilter;
+import com.royal.models.products.search.SmartphoneSearchFilter;
 import com.royal.models.products.enumerations.MobileBrand;
 import com.royal.models.products.enumerations.MobileOS;
 import com.royal.services.SmartphoneService;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -58,10 +59,32 @@ public class SmartphoneController {
         }
     }
 
-    @PostMapping("/update-smartphone/{id}")
-    public void updateSmartphone(@PathVariable String id, @RequestBody Smartphone updatedSmartphone) throws HttpException {
-        log.info("Updating a new smartphone: " + updatedSmartphone);
-        smartphoneService.updateSmartphoneById(id, updatedSmartphone);
+    @PostMapping(value = "/update-smartphone", consumes = "multipart/form-data", produces = "application/json")
+    public String updateSmartphone(@RequestParam("id") String id,
+                                   @RequestParam("model") String model,
+                                   @RequestParam("brand") String brand,
+                                   @RequestParam("price") float price,
+                                   @RequestParam("photo") @NotNull MultipartFile photo,
+                                   @RequestParam("os") String os,
+                                   @RequestParam("memory") int memory,
+                                   @RequestParam("description") String description) throws HttpException {
+        try {
+            var newSmartphone = new Smartphone();
+            newSmartphone.setModel(model);
+            newSmartphone.setBrand(MobileBrand.valueOf(brand));
+            newSmartphone.setPrice(price);
+            newSmartphone.setOs(MobileOS.valueOf(os));
+            newSmartphone.setMemory(memory);
+            newSmartphone.setDescription(description);
+            newSmartphone.setPhoto(photo.getBytes());
+            newSmartphone.setItemsInStock(1);
+            log.info("Created smartphone: " + newSmartphone);
+            smartphoneService.updateSmartphoneById(id, newSmartphone);
+            return newSmartphone.getId();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @DeleteMapping("/delete-smartphone/{id}")
