@@ -4,9 +4,11 @@ import com.royal.errors.HttpException;
 import com.royal.models.products.Laptop;
 import com.royal.models.products.search.LaptopSearchFilter;
 import com.royal.repositories.LaptopRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,16 @@ public class LaptopService {
     @Autowired
     private MongoTemplate template;
 
-    public List<Laptop> getAllLaptopsByParameters(LaptopSearchFilter filter) {
+    public List<Laptop> getAllLaptopsByText(String text) {
+        var criteria = new Criteria();
+        // This regular expression searches for all products where the
+        // "description" key includes a substring of the given text.
+        String pattern = String.format("^.*%s.*$", text);
+        criteria.and("description").regex(pattern);
+        return template.find(new Query(criteria), Laptop.class);
+    }
+
+    public List<Laptop> getAllLaptopsByParameters(@NotNull LaptopSearchFilter filter) {
         Query query = filter.getSearchQuery();
         return template.find(query, Laptop.class);
     }

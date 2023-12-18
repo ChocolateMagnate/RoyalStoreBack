@@ -30,6 +30,12 @@ public class SecurityConfiguration {
     @Autowired
     private UserRepository userRepository;
 
+    private static final String[] authenticatedEndpoints = {"/get-cart", "/get-liked", "/get-purchased",
+            "/add-product-to-cart", "/add-product-to-liked", "/purchase", "/remove-product-from-cart",
+            "/remove-product-from-liked", "/remove-product-from-purchased"};
+    private static final String[] adminEndpoints = {"/create-smartphone", "/update-smartphone/",
+            "/delete-smartphone/", "/create-laptop", "/update-laptop/", "/delete-laptop/"};
+
     @Bean
     public SecurityFilterChain filterChain(@NotNull HttpSecurity http) throws Exception {
         http
@@ -38,10 +44,9 @@ public class SecurityConfiguration {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/register", "/login", "get-random-products").permitAll()
-                    .requestMatchers("/create-smartphone", "/update-smartphone/", "/delete-smartphone/",
-                            "/create-laptop", "/update-laptop/", "delete-laptop/").hasAuthority("admin")
-                    .anyRequest().authenticated());
+                    .requestMatchers(authenticatedEndpoints).authenticated()
+                    .requestMatchers(adminEndpoints).hasAuthority("admin")
+                    .anyRequest().permitAll());
         return http.build();
     }
 

@@ -5,9 +5,11 @@ import com.royal.models.products.Smartphone;
 import com.royal.models.products.search.SmartphoneSearchFilter;
 import com.royal.repositories.SmartphoneRepository;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,16 @@ public class SmartphoneService {
     @Autowired
     private MongoTemplate template;
 
-    public List<Smartphone> getAllSmartphonesByParameters(SmartphoneSearchFilter filter) {
+    public List<Smartphone> getAllSmartphonesByDescription(String text) {
+        var criteria = new Criteria();
+        // This regular expression searches for all products where the
+        // "description" key includes a substring of the given text.
+        String pattern = String.format("^.*%s.*$", text);
+        criteria.and("description").regex(pattern);
+        return template.find(new Query(criteria), Smartphone.class);
+    }
+
+    public List<Smartphone> getAllSmartphonesByParameters(@NotNull SmartphoneSearchFilter filter) {
         Query query = filter.getSearchQuery();
         return template.find(query, Smartphone.class);
     }

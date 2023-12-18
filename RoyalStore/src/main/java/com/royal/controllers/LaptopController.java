@@ -22,7 +22,12 @@ public class LaptopController {
     @Autowired
     private LaptopService laptopService;
 
-    @GetMapping("/get-laptops")
+    @PostMapping("get-laptops-by-text")
+    public List<Laptop> getLaptopsByText(@RequestBody String description) {
+        return laptopService.getAllLaptopsByText(description);
+    }
+
+    @PostMapping("/get-laptops")
     public List<Laptop> getLaptopsWithFields(@RequestBody @NotNull LaptopSearchFilter soughtLaptop) {
         return laptopService.getAllLaptopsByParameters(soughtLaptop);
     }

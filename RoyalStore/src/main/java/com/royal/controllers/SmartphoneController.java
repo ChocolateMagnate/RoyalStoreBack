@@ -22,8 +22,14 @@ public class SmartphoneController {
     @Autowired
     SmartphoneService smartphoneService;
 
-    @GetMapping("/get-smartphones")
+    @PostMapping("/get-smartphones-by-text")
+    public List<Smartphone> getSmartphonesByText(@RequestBody String description) {
+        return smartphoneService.getAllSmartphonesByDescription(description);
+    }
+
+    @PostMapping("/get-smartphones")
     public List<Smartphone> getSmartphonesWithFields(@RequestBody SmartphoneSearchFilter soughtSmartphone) {
+        log.info("Got complex request: " + soughtSmartphone);
         return smartphoneService.getAllSmartphonesByParameters(soughtSmartphone);
     }
 

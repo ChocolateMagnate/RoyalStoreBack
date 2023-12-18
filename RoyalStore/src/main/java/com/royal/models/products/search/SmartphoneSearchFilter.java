@@ -27,4 +27,9 @@ public class SmartphoneSearchFilter {
         if (model != null) criteria.and("model").is(model);
         return new Query(criteria);
     }
+
+    public String toString() {
+        return model + " " + os + " " + upperPriceBond + "-" + lowerPriceBond + "$ "
+                + upperMemoryBond + "-" + lowerMemoryBond + "MB";
+    }
 }
