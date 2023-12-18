@@ -10,26 +10,28 @@ import org.springframework.data.mongodb.core.query.Query;
 public class SmartphoneSearchFilter {
     private Integer lowerPriceBond;
     private Integer upperPriceBond;
-    private Integer lowerMemoryBond;
-    private Integer upperMemoryBond;
+    private Integer memory;
     private MobileBrand brand;
     private MobileOS os;
     private String model;
 
     public Query getSearchQuery() {
         var criteria = new Criteria();
-        if (lowerPriceBond != null) criteria.and("price").gte(lowerMemoryBond);
-        if (upperPriceBond != null) criteria.and("price").lte(upperMemoryBond);
-        if (lowerMemoryBond != null) criteria.and("memory").gte(lowerMemoryBond);
-        if (upperMemoryBond != null) criteria.and("memory").lte(upperMemoryBond);
-        if (brand != null) criteria.and("brand").is(brand);
+        String pattern = String.format("^.*%s.*$", model);
+        if (model != null) criteria.and("model").regex(pattern);
         if (os != null) criteria.and("os").is(os);
-        if (model != null) criteria.and("model").is(model);
+        if (brand != null) criteria.and("brand").is(brand);
+        if (memory != null) criteria.and("memory").lte(memory);
+        if (lowerPriceBond != null && upperPriceBond != null)
+            criteria.and("price").gte(lowerPriceBond).lte(upperPriceBond);
+        else if (lowerPriceBond != null) criteria.and("price").gte(lowerPriceBond);
+        else if (upperPriceBond != null) criteria.and("price").lte(upperPriceBond);
+
         return new Query(criteria);
     }
 
     public String toString() {
         return model + " " + os + " " + upperPriceBond + "-" + lowerPriceBond + "$ "
-                + upperMemoryBond + "-" + lowerMemoryBond + "MB";
+                + memory + "MB";
     }
 }

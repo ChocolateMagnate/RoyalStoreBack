@@ -11,8 +11,7 @@ import org.springframework.data.mongodb.core.query.Query;
 public class LaptopSearchFilter {
     private Integer lowerPriceBond;
     private Integer upperPriceBond;
-    private Integer lowerMemoryBond;
-    private Integer upperMemoryBond;
+    private Integer memory;
     private DesktopBrand brand;
     private DesktopOS os;
     private String model;
@@ -24,13 +23,14 @@ public class LaptopSearchFilter {
 
     protected Criteria getCriteria() {
         var criteria = new Criteria();
-        if (lowerPriceBond != null) criteria.and("price").gte(lowerMemoryBond);
-        if (upperPriceBond != null) criteria.and("price").lte(upperMemoryBond);
-        if (lowerMemoryBond != null) criteria.and("memory").gte(lowerMemoryBond);
-        if (upperMemoryBond != null) criteria.and("memory").lte(upperMemoryBond);
         if (brand != null) criteria.and("brand").is(brand);
-        if (os != null) criteria.and("os").is(os);
+        if (memory != null) criteria.and("memory").lte(memory);
         if (model != null) criteria.and("model").is(model);
+        if (lowerPriceBond != null && upperPriceBond != null)
+            criteria.and("price").gte(lowerPriceBond).lte(upperPriceBond);
+        else if (lowerPriceBond != null) criteria.and("price").gte(lowerPriceBond);
+        else if (upperPriceBond != null) criteria.and("price").lte(upperPriceBond);
+
         return criteria;
     }
 }
