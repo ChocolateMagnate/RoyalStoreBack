@@ -1,8 +1,8 @@
-package com.royal.services;
+package com.royal.products.service;
 
 import com.royal.errors.HttpException;
-import com.royal.products.Smartphone;
-import com.royal.products.search.SmartphoneSearchFilter;
+import com.royal.products.domain.Smartphone;
+import com.royal.products.domain.search.SmartphoneSearchFilter;
 import com.royal.products.repository.SmartphoneRepository;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -20,10 +20,17 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class SmartphoneService {
-    @Autowired
-    private SmartphoneRepository smartphoneRepository;
-    @Autowired
-    private MongoTemplate template;
+    private final SmartphoneRepository smartphoneRepository;
+    private final MongoTemplate template;
+
+    SmartphoneService(@Autowired SmartphoneRepository smartphoneRepository, @Autowired MongoTemplate template) {
+        this.smartphoneRepository = smartphoneRepository;
+        this.template = template;
+    }
+
+    public Optional<Smartphone> findSmartphoneById(String id) {
+        return smartphoneRepository.findById(id);
+    }
 
     public List<Smartphone> getAllSmartphonesByDescription(String text) {
         var criteria = new Criteria();

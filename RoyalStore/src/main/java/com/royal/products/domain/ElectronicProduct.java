@@ -1,4 +1,4 @@
-package com.royal.products;
+package com.royal.products.domain;
 
 public interface ElectronicProduct {
     String getId();

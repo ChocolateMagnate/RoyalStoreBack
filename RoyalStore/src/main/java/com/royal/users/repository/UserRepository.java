@@ -1,6 +1,6 @@
-package com.royal.users;
+package com.royal.users.repository;
 
-import com.royal.users.User;
+import com.royal.users.domain.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

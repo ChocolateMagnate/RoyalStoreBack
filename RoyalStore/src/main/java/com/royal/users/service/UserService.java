@@ -1,17 +1,17 @@
-package com.royal.users;
+package com.royal.users.service;
 
 import com.google.common.collect.Iterables;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.auth.JwtService;
 import com.royal.errors.HttpException;
-import com.royal.products.ElectronicProduct;
-import com.royal.products.enumerations.ProductStorage;
+import com.royal.products.domain.ElectronicProduct;
+import com.royal.products.domain.enumerations.ProductStorage;
 import com.royal.products.service.ProductService;
-import com.royal.users.details.AuthenticatedUserDetails;
-import com.royal.users.details.LoginUserCredentials;
-import com.royal.users.details.PublicUserDetails;
-import com.royal.users.User;
-import com.royal.users.UserRepository;
+import com.royal.users.domain.User;
+import com.royal.users.domain.details.AuthenticatedUserDetails;
+import com.royal.users.domain.details.LoginUserCredentials;
+import com.royal.users.domain.details.PublicUserDetails;
+import com.royal.users.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -30,14 +30,18 @@ import java.util.regex.Pattern;
 @Log4j2
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtService jwtService;
+    private final UserRepository userRepository;
+    private final ProductService productService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    UserService(@Autowired UserRepository userRepository, @Autowired ProductService productService,
+                @Autowired PasswordEncoder passwordEncoder, @Autowired JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.productService = productService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
 
     private static final String emailRegularExpression =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";

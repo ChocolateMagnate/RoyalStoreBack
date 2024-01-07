@@ -1,4 +1,4 @@
-package com.royal.products;
+package com.royal.products.domain;
 
 import com.royal.products.domain.enumerations.MobileBrand;
 import com.royal.products.domain.enumerations.MobileOS;

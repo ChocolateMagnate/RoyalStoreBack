@@ -1,11 +1,11 @@
-package com.royal.controllers;
+package com.royal.products.controller;
 
 import com.royal.errors.HttpException;
-import com.royal.products.Smartphone;
-import com.royal.products.search.SmartphoneSearchFilter;
-import com.royal.products.enumerations.MobileBrand;
-import com.royal.products.enumerations.MobileOS;
-import com.royal.services.SmartphoneService;
+import com.royal.products.domain.Smartphone;
+import com.royal.products.domain.search.SmartphoneSearchFilter;
+import com.royal.products.domain.enumerations.MobileBrand;
+import com.royal.products.domain.enumerations.MobileOS;
+import com.royal.products.service.SmartphoneService;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,11 @@ import java.util.List;
 @Log4j2
 @RestController
 public class SmartphoneController {
-    @Autowired
-    SmartphoneService smartphoneService;
+    private final SmartphoneService smartphoneService;
+
+    SmartphoneController(@Autowired SmartphoneService smartphoneService) {
+        this.smartphoneService = smartphoneService;
+    }
 
     @PostMapping("/get-smartphones-by-text")
     public List<Smartphone> getSmartphonesByText(@RequestBody String description) {
@@ -75,18 +78,18 @@ public class SmartphoneController {
                                    @RequestParam("memory") int memory,
                                    @RequestParam("description") String description) throws HttpException {
         try {
-            var newSmartphone = new Smartphone();
-            newSmartphone.setModel(model);
-            newSmartphone.setBrand(MobileBrand.valueOf(brand));
-            newSmartphone.setPrice(price);
-            newSmartphone.setOs(MobileOS.valueOf(os));
-            newSmartphone.setMemory(memory);
-            newSmartphone.setDescription(description);
-            newSmartphone.setPhoto(photo.getBytes());
-            newSmartphone.setItemsInStock(1);
-            log.info("Created smartphone: " + newSmartphone);
-            smartphoneService.updateSmartphoneById(id, newSmartphone);
-            return newSmartphone.getId();
+            var targetSmartphone = smartphoneService.findSmartphoneById(id).orElseThrow(() -> new HttpException(HttpStatus.NOT_FOUND, ""));
+            targetSmartphone.setModel(model);
+            targetSmartphone.setBrand(MobileBrand.valueOf(brand));
+            targetSmartphone.setPrice(price);
+            targetSmartphone.setOs(MobileOS.valueOf(os));
+            targetSmartphone.setMemory(memory);
+            targetSmartphone.setDescription(description);
+            targetSmartphone.setPhoto(photo.getBytes());
+            targetSmartphone.setItemsInStock(1);
+            log.info("Created smartphone: " + targetSmartphone);
+            smartphoneService.updateSmartphoneById(id, targetSmartphone);
+            return targetSmartphone.getId();
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

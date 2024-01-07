@@ -1,12 +1,12 @@
-package com.royal.users;
+package com.royal.users.controller;
 
 import com.royal.errors.HttpException;
-import com.royal.products.ElectronicProduct;
-import com.royal.products.enumerations.ProductStorage;
-import com.royal.users.details.AuthenticatedUserDetails;
-import com.royal.users.details.LoginUserCredentials;
-import com.royal.users.details.PublicUserDetails;
-import com.royal.users.UserService;
+import com.royal.products.domain.ElectronicProduct;
+import com.royal.products.domain.enumerations.ProductStorage;
+import com.royal.users.domain.details.AuthenticatedUserDetails;
+import com.royal.users.domain.details.LoginUserCredentials;
+import com.royal.users.domain.details.PublicUserDetails;
+import com.royal.users.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +16,11 @@ import java.util.ArrayList;
 @Log4j2
 @RestController
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    UserController(@Autowired UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
     public PublicUserDetails register(@RequestBody AuthenticatedUserDetails user) throws HttpException {

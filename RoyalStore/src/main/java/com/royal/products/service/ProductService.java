@@ -1,8 +1,8 @@
-package com.royal.services;
+package com.royal.products.service;
 
-import com.royal.products.ElectronicProduct;
-import com.royal.products.Laptop;
-import com.royal.products.Smartphone;
+import com.royal.products.domain.ElectronicProduct;
+import com.royal.products.domain.Laptop;
+import com.royal.products.domain.Smartphone;
 import com.royal.products.repository.LaptopRepository;
 import com.royal.products.repository.SmartphoneRepository;
 import org.jetbrains.annotations.NotNull;
@@ -18,12 +18,16 @@ import java.util.stream.Stream;
 
 @Service
 public class ProductService {
-    @Autowired
-    private LaptopRepository laptopRepository;
-    @Autowired
-    private SmartphoneRepository smartphoneRepository;
-    @Autowired
-    private MongoTemplate template;
+    private final LaptopRepository laptopRepository;
+    private final SmartphoneRepository smartphoneRepository;
+    private final MongoTemplate template;
+
+    ProductService(@Autowired LaptopRepository laptopRepository, @Autowired SmartphoneRepository smartphoneRepository,
+                   @Autowired MongoTemplate template) {
+        this.laptopRepository = laptopRepository;
+        this.smartphoneRepository = smartphoneRepository;
+        this.template = template;
+    }
 
     public boolean productExistsById(String id) {
         return laptopRepository.existsById(id) || smartphoneRepository.existsById(id);

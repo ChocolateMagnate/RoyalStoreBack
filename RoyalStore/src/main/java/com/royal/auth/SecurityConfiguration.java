@@ -2,7 +2,7 @@ package com.royal.auth;
 
 import com.royal.auth.filters.EmailAndPasswordLoginFilter;
 import com.royal.auth.filters.OAuth2Filter;
-import com.royal.repositories.UserRepository;
+import com.royal.users.service.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -27,8 +26,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserService userService;
+
+    SecurityConfiguration(@Autowired UserService userService) {
+        this.userService = userService;
+    }
 
     private static final String[] authenticatedEndpoints = {"/get-cart", "/get-liked", "/get-purchased",
             "/add-product-to-cart", "/add-product-to-liked", "/purchase", "/remove-product-from-cart",
@@ -52,9 +54,9 @@ public class SecurityConfiguration {
 
     @Bean
     public UserDetailsService userDetails() {
-        return email -> userRepository.findByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException("User by email " + email + " is not found."));
+        return userService::loadUserByEmail;
     }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         var provider = new DaoAuthenticationProvider();
@@ -62,6 +64,7 @@ public class SecurityConfiguration {
         provider.setUserDetailsService(userDetails());
         return provider;
     }
+
     @Bean
     public AuthenticationManager authenticationManager(@NotNull AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -85,12 +88,12 @@ public class SecurityConfiguration {
 
     @Bean
     public EmailAndPasswordLoginFilter emailAndPasswordLoginFilter() {
-        return new EmailAndPasswordLoginFilter();
+        return new EmailAndPasswordLoginFilter(jwt(), userService);
     }
 
     @Bean
     public OAuth2Filter oAuth2Filter() {
-        return new OAuth2Filter();
+        return new OAuth2Filter(jwt());
     }
 
 }

@@ -1,6 +1,6 @@
-package com.royal.repositories;
+package com.royal.products.repository;
 
-import com.royal.models.products.Laptop;
+import com.royal.products.domain.Laptop;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 

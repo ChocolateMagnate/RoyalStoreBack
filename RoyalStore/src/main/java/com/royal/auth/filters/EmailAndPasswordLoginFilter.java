@@ -4,8 +4,8 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.auth.JwtService;
 import com.royal.errors.HttpException;
-import com.royal.models.users.User;
-import com.royal.services.UserService;
+import com.royal.users.domain.User;
+import com.royal.users.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,10 +25,13 @@ import java.util.Optional;
 
 @Log4j2
 public class EmailAndPasswordLoginFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserService userService;
+    private final JwtService jwtService;
+    private final UserService userService;
+
+    public EmailAndPasswordLoginFilter(@Autowired JwtService jwtService, @Autowired UserService userService) {
+        this.jwtService = jwtService;
+        this.userService = userService;
+    }
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,

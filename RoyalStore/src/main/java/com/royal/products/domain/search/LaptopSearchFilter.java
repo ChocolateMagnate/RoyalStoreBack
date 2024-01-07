@@ -1,4 +1,4 @@
-package com.royal.products.domain.enumerations.search;
+package com.royal.products.domain.search;
 
 import com.royal.products.domain.enumerations.DesktopBrand;
 import com.royal.products.domain.enumerations.DesktopOS;

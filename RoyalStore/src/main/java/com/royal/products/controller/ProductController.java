@@ -1,8 +1,8 @@
-package com.royal.controllers;
+package com.royal.products.controller;
 
-import com.royal.products.ElectronicProduct;
-import com.royal.products.search.ElectronicProductSearchFilter;
-import com.royal.services.ProductService;
+import com.royal.products.domain.ElectronicProduct;
+import com.royal.products.domain.search.ElectronicProductSearchFilter;
+import com.royal.products.service.ProductService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +11,11 @@ import java.util.List;
 
 @RestController
 public class ProductController {
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+
+    ProductController(@Autowired ProductService productService) {
+        this.productService = productService;
+    }
 
     @PostMapping("/get-products")
     public List<ElectronicProduct> getProductsWithParameters(@RequestBody @NotNull ElectronicProductSearchFilter filter) {

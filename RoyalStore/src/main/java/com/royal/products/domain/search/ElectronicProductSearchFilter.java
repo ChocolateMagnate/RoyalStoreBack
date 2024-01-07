@@ -1,4 +1,4 @@
-package com.royal.products.domain.enumerations.search;
+package com.royal.products.domain.search;
 
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;

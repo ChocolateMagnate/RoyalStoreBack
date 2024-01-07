@@ -1,7 +1,7 @@
-package com.royal.users;
+package com.royal.users.domain;
 
 
-import com.royal.users.details.PublicUserDetails;
+import com.royal.users.domain.details.PublicUserDetails;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;

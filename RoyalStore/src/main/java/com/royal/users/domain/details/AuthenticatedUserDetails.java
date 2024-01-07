@@ -1,4 +1,4 @@
-package com.royal.users.details;
+package com.royal.users.domain.details;
 
 import lombok.Getter;
 import lombok.Setter;

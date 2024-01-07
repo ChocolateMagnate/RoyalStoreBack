@@ -1,8 +1,8 @@
-package com.royal.services;
+package com.royal.products.service;
 
 import com.royal.errors.HttpException;
-import com.royal.products.Laptop;
-import com.royal.products.search.LaptopSearchFilter;
+import com.royal.products.domain.Laptop;
+import com.royal.products.domain.search.LaptopSearchFilter;
 import com.royal.products.repository.LaptopRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +18,13 @@ import java.util.Optional;
 
 @Service
 public class LaptopService {
-    @Autowired
-    private LaptopRepository laptopRepository;
-    @Autowired
-    private MongoTemplate template;
+    private final LaptopRepository laptopRepository;
+    private final MongoTemplate template;
+
+    LaptopService(@Autowired LaptopRepository laptopRepository, @Autowired MongoTemplate template) {
+        this.laptopRepository = laptopRepository;
+        this.template = template;
+    }
 
     public List<Laptop> getAllLaptopsByText(String text) {
         var criteria = new Criteria();

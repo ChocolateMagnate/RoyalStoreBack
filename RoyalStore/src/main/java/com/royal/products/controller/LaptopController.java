@@ -1,11 +1,11 @@
-package com.royal.controllers;
+package com.royal.products.controller;
 
 import com.royal.errors.HttpException;
-import com.royal.products.Laptop;
-import com.royal.products.search.LaptopSearchFilter;
-import com.royal.products.enumerations.DesktopBrand;
-import com.royal.products.enumerations.DesktopOS;
-import com.royal.services.LaptopService;
+import com.royal.products.domain.Laptop;
+import com.royal.products.domain.search.LaptopSearchFilter;
+import com.royal.products.domain.enumerations.DesktopBrand;
+import com.royal.products.domain.enumerations.DesktopOS;
+import com.royal.products.service.LaptopService;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,11 @@ import java.util.List;
 @Log4j2
 @RestController
 public class LaptopController {
-    @Autowired
-    private LaptopService laptopService;
+    private final LaptopService laptopService;
+
+    LaptopController(@Autowired LaptopService laptopService) {
+        this.laptopService = laptopService;
+    }
 
     @PostMapping("get-laptops-by-text")
     public List<Laptop> getLaptopsByText(@RequestBody String description) {
