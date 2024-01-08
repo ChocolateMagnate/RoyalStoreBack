@@ -4,7 +4,7 @@ spring:
       host: mongodb
       database: store
       authentication-database: store
-      uri: mongodb://root:7skk7QENyt4ZA3YCarktQdp6M4d6wykx@mongodb:27017/store?authSource=admin
+      uri: ${MONGODB_URL}
   security:
     oauth2:
       client:
