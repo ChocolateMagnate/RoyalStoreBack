@@ -96,7 +96,7 @@ public class JwtService {
         return generateJwtToken(subject, rememberMe);
     }
 
-    private Date getExpirationTime(Instant issuedAt, boolean rememberMe) {
+    private Date getExpirationTime(@NotNull Instant issuedAt, boolean rememberMe) {
         int durationInMinutes = (rememberMe) ? 2 * 64 : 30;
         Instant expiration = issuedAt.plus(durationInMinutes, ChronoUnit.MINUTES);
         return Date.from(expiration);

@@ -50,7 +50,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        var authorities = new ArrayList<SimpleGrantedAuthority>();
+        var authorities = new ArrayList<SimpleGrantedAuthority>(roles.size());
         for (String role : roles) authorities.add(new SimpleGrantedAuthority(role));
         return authorities;
     }

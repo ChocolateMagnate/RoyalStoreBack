@@ -35,8 +35,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    UserService(@Autowired UserRepository userRepository, @Autowired ProductService productService,
-                @Autowired PasswordEncoder passwordEncoder, @Autowired JwtService jwtService) {
+    @Autowired
+    public UserService(UserRepository userRepository, ProductService productService,
+                       PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.productService = productService;
         this.passwordEncoder = passwordEncoder;
@@ -67,7 +68,7 @@ public class UserService {
         return details;
     }
 
-    private boolean isValidEmail(String email) {
+    public boolean isValidEmail(String email) {
         Pattern pattern = Pattern.compile(emailRegularExpression);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();

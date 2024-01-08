@@ -16,10 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -27,9 +25,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtDecoder jwtDecoder;
+    private final JwtService jwtService;
 
-    SecurityConfiguration(@Autowired UserService userService) {
+    @Autowired
+    SecurityConfiguration(UserService userService, PasswordEncoder passwordEncoder,
+                          JwtDecoder jwtDecoder, JwtService jwtService) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtDecoder = jwtDecoder;
+        this.jwtService = jwtService;
     }
 
     private static final String[] authenticatedEndpoints = {"/get-cart", "/get-liked", "/get-purchased",
@@ -60,7 +66,7 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         var provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(userDetails());
         return provider;
     }
@@ -71,29 +77,16 @@ public class SecurityConfiguration {
     }
 
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation("https://accounts.google.com");
-    }
-
-    @Bean
-    public JwtService jwt() {
-        return new JwtService();
-    }
 
     @Bean
     public EmailAndPasswordLoginFilter emailAndPasswordLoginFilter() {
-        return new EmailAndPasswordLoginFilter(jwt(), userService);
+        return new EmailAndPasswordLoginFilter(jwtService, userService);
     }
 
     @Bean
     public OAuth2Filter oAuth2Filter() {
-        return new OAuth2Filter(jwt());
+        return new OAuth2Filter(jwtService);
     }
 
 }

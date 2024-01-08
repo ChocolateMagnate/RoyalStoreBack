@@ -2,8 +2,7 @@ package com.royal.products.domain;
 
 import com.royal.products.domain.enumerations.DesktopBrand;
 import com.royal.products.domain.enumerations.DesktopOS;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +10,9 @@ import java.util.HashMap;
 
 @Getter
 @Setter
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "laptops")
 public class Laptop implements ElectronicProduct {
     @Id
@@ -20,9 +22,9 @@ public class Laptop implements ElectronicProduct {
     private DesktopBrand brand;
     private DesktopOS os;
     private float price;
-    private byte[] photo;
     private int memory;
     private long itemsInStock = 1;
+    private byte[] photo;
 
     public HashMap<String, Object> asHashMap() {
         HashMap<String, Object> descriptor = new HashMap<>(13);
