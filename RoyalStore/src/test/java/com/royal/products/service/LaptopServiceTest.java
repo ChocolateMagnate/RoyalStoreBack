@@ -3,6 +3,7 @@ package com.royal.products.service;
 import com.royal.products.domain.Laptop;
 import com.royal.products.domain.enumerations.DesktopBrand;
 import com.royal.products.domain.enumerations.DesktopOS;
+import com.royal.products.domain.search.LaptopSearchFilter;
 import com.royal.products.repository.LaptopRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,5 +66,24 @@ class LaptopServiceTest {
         assertFalse(macbooks.isEmpty());
         assertTrue(macbooks.contains(macbook1));
         assertTrue(macbooks.contains(macbook2));
+    }
+
+    @Test
+    public void getLaptopsCheaper() {
+        var filter = new LaptopSearchFilter();
+        filter.setUpperPriceBond(11116763 + 1);
+        List<Laptop> laptops = laptopService.getAllLaptopsByParameters(filter);
+        assertTrue(laptops.contains(macbook1));
+        assertTrue(laptops.contains(macbook2));
+        assertTrue(laptops.contains(acer));
+        assertTrue(laptops.contains(hp));
+    }
+
+    @Test
+    public void getNoLaptopsForBadCriteria() {
+        var filter = new LaptopSearchFilter();
+        filter.setOs(DesktopOS.Linux);
+        List<Laptop> laptops = laptopService.getAllLaptopsByParameters(filter);
+        assertTrue(laptops.isEmpty());
     }
 }

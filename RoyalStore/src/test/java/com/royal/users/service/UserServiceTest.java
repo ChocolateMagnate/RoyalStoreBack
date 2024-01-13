@@ -6,6 +6,7 @@ import com.royal.products.service.ProductService;
 import com.royal.users.domain.details.AuthenticatedUserDetails;
 import com.royal.users.domain.details.LoginUserCredentials;
 import com.royal.users.repository.UserRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +42,8 @@ public class UserServiceTest {
 
     @Test
     public void invalidEmailsAreRejected() {
-        String[] invalidEmails = { "hello", "email with@space", "email_without_at.com" };
-        for (String invalidEmail : invalidEmails) {
+        for (int attempt = 0; attempt < 100; ++attempt) {
+            String invalidEmail = RandomStringUtils.random(32, "abeo80711l");
             boolean verdict = userService.isValidEmail(invalidEmail);
             assertFalse(verdict);
         }
@@ -50,18 +51,20 @@ public class UserServiceTest {
 
     @Test
     public void registrationUniqueUserWorks() {
-        var user = new AuthenticatedUserDetails();
-        user.setEmail("valid@email.com");
-        user.setPassword("dummy password");
-        assertDoesNotThrow(() -> {userService.registerNewUser(user);});
-        assertTrue(userRepository.existsByEmail("valid@email.com"));
+        for (int attempt = 0; attempt < 100; ++attempt) {
+            var user = getMockedValidUser();
+            String email = user.getEmail();
+            assertDoesNotThrow(() -> {userService.registerNewUser(user);});
+            assertTrue(userRepository.existsByEmail(email));
+        }
     }
 
     @Test
     public void failRegistrationWithInvalidEmail() {
-        var invalidEmailUser = new AuthenticatedUserDetails();
-        invalidEmailUser.setEmail(" this is not allowed \n");
-        assertThrows(HttpException.class, () -> {userService.registerNewUser(invalidEmailUser);});
+        for (int attempt = 0; attempt < 100; ++attempt) {
+            var invalidEmailUser = getMockedInvalidUser();
+            assertThrows(HttpException.class, () -> {userService.registerNewUser(invalidEmailUser);});
+        }
     }
 
     @Test
@@ -88,10 +91,10 @@ public class UserServiceTest {
 
     @Test
     public void acceptRegistrationWithUniqueEmailAndFilledPassword() {
-        var validUser = new AuthenticatedUserDetails();
-        validUser.setEmail("decent@email.com");
-        validUser.setPassword("arbitrary password");
-        assertDoesNotThrow(() -> {userService.registerNewUser(validUser);});
+        for (int attempt = 0; attempt < 100; ++attempt) {
+            var validUser = getMockedValidUser();
+            assertDoesNotThrow(() -> {userService.registerNewUser(validUser);});
+        }
     }
 
     @Test
@@ -118,10 +121,48 @@ public class UserServiceTest {
 
     @Test
     public void acceptLoginIfUserExistsAndPasswordMatches() {
-        acceptRegistrationWithUniqueEmailAndFilledPassword();
-        var validLoginCredentials = new LoginUserCredentials();
-        validLoginCredentials.setEmail("decent@email.com");
-        validLoginCredentials.setPassword("arbitrary password");
-        assertDoesNotThrow(() -> {userService.loginExistingUser(validLoginCredentials);});
+        for (int attempt = 0; attempt < 100; ++attempt) {
+            var validUser = getMockedValidUser();
+            String email = validUser.getEmail();
+            String password = validUser.getPassword();
+            assertDoesNotThrow(() -> {userService.registerNewUser(validUser);});
+
+            var validLoginCredentials = new LoginUserCredentials();
+            validLoginCredentials.setEmail(email);
+            validLoginCredentials.setPassword(password);
+            assertDoesNotThrow(() -> {userService.loginExistingUser(validLoginCredentials);});
+        }
+    }
+
+    private AuthenticatedUserDetails getMockedInvalidUser() {
+        var invalidUser = new AuthenticatedUserDetails();
+        invalidUser.setEmail(RandomStringUtils.random(20, "qwertyuiopashknman1921"));
+        invalidUser.setPassword(RandomStringUtils.randomAlphabetic(32));
+        return invalidUser;
+    }
+
+    private AuthenticatedUserDetails getMockedValidUser() {
+        var validUser = new AuthenticatedUserDetails();
+        String username = RandomStringUtils.randomAlphabetic(12);
+        String domain = RandomStringUtils.randomAlphabetic(13);
+        validUser.setEmail(username + "@" + domain + ".com");
+        validUser.setPassword(RandomStringUtils.random(45));
+        return validUser;
+    }
+
+    private LoginUserCredentials getMockedInvalidCredentials() {
+        var invalidUser = new LoginUserCredentials();
+        invalidUser.setEmail(RandomStringUtils.random(20, "qwertyuiopashknman1921"));
+        invalidUser.setPassword(RandomStringUtils.randomAlphabetic(32));
+        return invalidUser;
+    }
+
+    private LoginUserCredentials getMockedValidCredentials() {
+        var validUser = new LoginUserCredentials();
+        String username = RandomStringUtils.randomAlphabetic(12);
+        String domain = RandomStringUtils.randomAlphabetic(13);
+        validUser.setEmail(username + "@" + domain + ".com");
+        validUser.setPassword(RandomStringUtils.random(45));
+        return validUser;
     }
 }
