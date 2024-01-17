@@ -27,8 +27,8 @@ public class ProductController {
         return productService.getRandomStock();
     }
 
-    @GetMapping("/search-products-by-search")
-    public List<ElectronicProduct> searchProductsBySearch(@RequestParam String search) {
+    @PostMapping("/search-products-by-search")
+    public List<ElectronicProduct> searchProductsBySearch(@RequestBody String search) {
         return productService.getProductsByDescription(search);
     }
 

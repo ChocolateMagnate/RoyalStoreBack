@@ -76,7 +76,7 @@ public class UserService {
 
     public PublicUserDetails loginExistingUser(@NotNull LoginUserCredentials credentials) throws HttpException {
         User userInDatabase = userRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new HttpException(HttpStatus.FOUND,
+                .orElseThrow(() -> new HttpException(HttpStatus.NOT_FOUND,
                         "User by email " + credentials.getEmail() + " already exists."));
         if (!passwordEncoder.matches(credentials.getPassword(), userInDatabase.getPassword()))
             throw new HttpException(HttpStatus.BAD_REQUEST, "Incorrect password for " + userInDatabase.getEmail());
