@@ -7,15 +7,16 @@ import com.royal.users.domain.details.AuthenticatedUserDetails;
 import com.royal.users.domain.details.LoginUserCredentials;
 import com.royal.users.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// Test instance per class lifecycle allows us to make setup and teardown methods non-static.
+// See: https://stackoverflow.com/a/63258521
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(properties = "spring.config.location=classpath:application.yaml")
 public class UserServiceTest {
     @Autowired
@@ -28,14 +29,12 @@ public class UserServiceTest {
     private JwtService jwtService;
     private UserService userService;
 
-    @BeforeEach
+    @BeforeAll
     public void setup() {
-        if (this.userService == null)
-           this.userService = new UserService(this.userRepository, this.productService,
-                this.passwordEncoder, this.jwtService);
+        this.userService = new UserService(this.userRepository, this.productService, this.passwordEncoder, this.jwtService);
     }
 
-    @AfterEach
+    @AfterAll
     public void teardown() {
         this.userRepository.deleteAll();
     }
@@ -78,11 +77,11 @@ public class UserServiceTest {
     @Test
     public void failRegistrationUserAlreadyExists() {
         var originalUser = new AuthenticatedUserDetails();
-        originalUser.setEmail("test@example.com");
+        originalUser.setEmail("test3@example.com");
         originalUser.setPassword("strong password");
 
         var duplicateUser = new AuthenticatedUserDetails();
-        duplicateUser.setEmail("test@example.com");
+        duplicateUser.setEmail("test3@example.com");
         duplicateUser.setPassword("another strong password");
 
         assertDoesNotThrow(() -> {userService.registerNewUser(originalUser);});
