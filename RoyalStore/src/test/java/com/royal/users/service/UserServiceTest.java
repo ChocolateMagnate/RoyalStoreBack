@@ -53,7 +53,7 @@ public class UserServiceTest {
         for (int attempt = 0; attempt < 100; ++attempt) {
             var user = getMockedValidUser();
             String email = user.getEmail();
-            assertDoesNotThrow(() -> {userService.registerNewUser(user);});
+            assertDoesNotThrow(() -> userService.registerNewUser(user));
             assertTrue(userRepository.existsByEmail(email));
         }
     }
@@ -62,7 +62,7 @@ public class UserServiceTest {
     public void failRegistrationWithInvalidEmail() {
         for (int attempt = 0; attempt < 100; ++attempt) {
             var invalidEmailUser = getMockedInvalidUser();
-            assertThrows(HttpException.class, () -> {userService.registerNewUser(invalidEmailUser);});
+            assertThrows(HttpException.class, () -> userService.registerNewUser(invalidEmailUser));
         }
     }
 
@@ -71,7 +71,7 @@ public class UserServiceTest {
         var blankPasswordUser = new AuthenticatedUserDetails();
         blankPasswordUser.setEmail("valid@email.com");
         blankPasswordUser.setPassword("");
-        assertThrows(HttpException.class, () -> {userService.registerNewUser(blankPasswordUser);});
+        assertThrows(HttpException.class, () -> userService.registerNewUser(blankPasswordUser));
     }
 
     @Test
@@ -84,15 +84,15 @@ public class UserServiceTest {
         duplicateUser.setEmail("test3@example.com");
         duplicateUser.setPassword("another strong password");
 
-        assertDoesNotThrow(() -> {userService.registerNewUser(originalUser);});
-        assertThrows(HttpException.class, () -> {userService.registerNewUser(duplicateUser);});
+        assertDoesNotThrow(() -> userService.registerNewUser(originalUser));
+        assertThrows(HttpException.class, () -> userService.registerNewUser(duplicateUser));
     }
 
     @Test
     public void acceptRegistrationWithUniqueEmailAndFilledPassword() {
         for (int attempt = 0; attempt < 100; ++attempt) {
             var validUser = getMockedValidUser();
-            assertDoesNotThrow(() -> {userService.registerNewUser(validUser);});
+            assertDoesNotThrow(() -> userService.registerNewUser(validUser));
         }
     }
 
@@ -102,7 +102,7 @@ public class UserServiceTest {
         nonexistentUser.setEmail("unknown@hidden.com");
         nonexistentUser.setPassword("idk");
 
-        assertThrows(HttpException.class, () -> {userService.loginExistingUser(nonexistentUser);});
+        assertThrows(HttpException.class, () -> userService.loginExistingUser(nonexistentUser));
     }
 
     @Test
@@ -110,12 +110,12 @@ public class UserServiceTest {
         var registeringUser = new AuthenticatedUserDetails();
         registeringUser.setEmail("test@example.com");
         registeringUser.setPassword("strong password");
-        assertDoesNotThrow(() -> {userService.registerNewUser(registeringUser);});
+        assertDoesNotThrow(() -> userService.registerNewUser(registeringUser));
 
         var loggingUser = new LoginUserCredentials();
         loggingUser.setEmail("test@example.com");
         loggingUser.setPassword("weak password");
-        assertThrows(HttpException.class, () -> {userService.loginExistingUser(loggingUser);});
+        assertThrows(HttpException.class, () -> userService.loginExistingUser(loggingUser));
     }
 
     @Test
@@ -124,12 +124,12 @@ public class UserServiceTest {
             var validUser = getMockedValidUser();
             String email = validUser.getEmail();
             String password = validUser.getPassword();
-            assertDoesNotThrow(() -> {userService.registerNewUser(validUser);});
+            assertDoesNotThrow(() -> userService.registerNewUser(validUser));
 
             var validLoginCredentials = new LoginUserCredentials();
             validLoginCredentials.setEmail(email);
             validLoginCredentials.setPassword(password);
-            assertDoesNotThrow(() -> {userService.loginExistingUser(validLoginCredentials);});
+            assertDoesNotThrow(() -> userService.loginExistingUser(validLoginCredentials));
         }
     }
 
