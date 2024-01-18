@@ -3,10 +3,12 @@ package com.royal.products.domain;
 import com.royal.products.domain.enumerations.DesktopBrand;
 import com.royal.products.domain.enumerations.DesktopOS;
 import lombok.*;
+import org.jetbrains.annotations.Contract;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -25,6 +27,29 @@ public class Laptop implements ElectronicProduct {
     private int memory;
     private long itemsInStock = 1;
     private byte[] photo;
+
+    @Contract(pure = true)
+    public Laptop(Laptop other) {
+        this.id = other.id;
+        this.model = other.model;
+        this.description = other.description;
+        this.brand = other.brand;
+        this.os = other.os;
+        this.price = other.price;
+        this.memory = other.memory;
+        this.itemsInStock = other.itemsInStock;
+        this.photo = other.photo;
+    }
+
+    public Laptop(Map<String, Object> contents) {
+        this.id = contents.get("id").toString();
+        this.model = contents.get("model").toString();
+        this.description = contents.get("description").toString().toLowerCase();
+        this.brand = DesktopBrand.valueOf(contents.get("brand").toString());
+        this.os = DesktopOS.valueOf(contents.get("os").toString());
+        this.price = Float.parseFloat(contents.get("price").toString());
+        this.memory = (int) contents.get("memory");
+    }
 
     public HashMap<String, Object> asHashMap() {
         HashMap<String, Object> descriptor = new HashMap<>(13);

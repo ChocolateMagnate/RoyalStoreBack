@@ -26,11 +26,10 @@ public class LaptopService {
         this.template = template;
     }
 
-    public List<Laptop> getAllLaptopsByText(String text) {
+    public List<Laptop> getAllLaptopsByText(@NotNull String text) {
         var criteria = new Criteria();
-        // This regular expression searches for all products where the
-        // "description" key includes a substring of the given text.
-        String pattern = String.format("^.*%s.*$", text);
+        String keywords = text.toLowerCase().replace(" ", "|");
+        String pattern = "\\b(?:" + keywords + ")\\b";
         criteria.and("description").regex(pattern);
         return template.find(new Query(criteria), Laptop.class);
     }
@@ -63,8 +62,10 @@ public class LaptopService {
         extractedLaptop.setBrand(updatedLaptop.getBrand());
         extractedLaptop.setPhoto(updatedLaptop.getPhoto());
         extractedLaptop.setPrice(updatedLaptop.getPrice());
+        extractedLaptop.setModel(updatedLaptop.getModel());
         extractedLaptop.setMemory(updatedLaptop.getMemory());
         extractedLaptop.setDescription(updatedLaptop.getDescription());
+        extractedLaptop.setItemsInStock(updatedLaptop.getItemsInStock());
         laptopRepository.save(extractedLaptop);
     }
 
