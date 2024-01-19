@@ -4,3 +4,6 @@ spring:
       uri: mongodb://localhost:27017/testing
 
 JWT_SINGING_KEY: EH5Rnxg9KsdSu283ruRGtHaS2qNUCxhc
+server:
+  address: localhost
+  port: 8080
