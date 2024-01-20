@@ -4,6 +4,7 @@ import com.royal.products.domain.enumerations.DesktopBrand;
 import com.royal.products.domain.enumerations.DesktopOS;
 import lombok.*;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -29,7 +30,7 @@ public class Laptop implements ElectronicProduct {
     private byte[] photo;
 
     @Contract(pure = true)
-    public Laptop(Laptop other) {
+    public Laptop(@NotNull Laptop other) {
         this.id = other.id;
         this.model = other.model;
         this.description = other.description;
@@ -41,7 +42,7 @@ public class Laptop implements ElectronicProduct {
         this.photo = other.photo;
     }
 
-    public Laptop(Map<String, Object> contents) {
+    public Laptop(@NotNull Map<String, Object> contents) {
         this.id = contents.get("id").toString();
         this.model = contents.get("model").toString();
         this.description = contents.get("description").toString().toLowerCase();

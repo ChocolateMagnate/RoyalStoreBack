@@ -48,27 +48,21 @@ public class LaptopController {
                                @RequestParam("os") String os,
                                @RequestParam("memory") int memory,
                                @RequestParam("description") String description) throws HttpException {
-        try {
-            var newLaptop = new Laptop();
-            newLaptop.setModel(model);
-            newLaptop.setBrand(DesktopBrand.valueOf(brand));
-            newLaptop.setPrice(price);
-            newLaptop.setPhoto(photo.getBytes());
-            newLaptop.setOs(DesktopOS.valueOf(os));
-            newLaptop.setMemory(memory);
-            newLaptop.setDescription(description);
-            newLaptop.setItemsInStock(1);
-            laptopService.createNewLaptop(newLaptop);
-            log.info("Created a new laptop: " + newLaptop);
-            return newLaptop.getId();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+       Laptop laptop = buildLaptopWith(model, brand, price, photo, os, memory, description);
+       laptopService.createNewLaptop(laptop);
+       log.info("Created a new laptop: " + laptop);
+       return laptop.getId();
     }
 
-    @PostMapping("/update-laptop/{id}")
-    public void updateLaptop(@PathVariable String id, @RequestBody Laptop updatedLaptop) throws HttpException {
+    @PostMapping(value = "/update-laptop/{id}", consumes = "multipart/form-data")
+    public void updateLaptop(@PathVariable String id, @RequestParam("model") String model,
+                             @RequestParam("brand") String brand,
+                             @RequestParam("price") float price,
+                             @RequestParam("photo") MultipartFile photo,
+                             @RequestParam("os") String os,
+                             @RequestParam("memory") int memory,
+                             @RequestParam("description") String description) throws HttpException {
+        Laptop updatedLaptop = buildLaptopWith(model, brand, price, photo, os, memory, description);
         laptopService.updateLaptopById(id, updatedLaptop);
 
     }
@@ -76,5 +70,24 @@ public class LaptopController {
     @DeleteMapping("/delete-laptop/{id}")
     public void deleteLaptop(@PathVariable String id) throws HttpException {
         laptopService.deleteLaptopById(id);
+    }
+
+    private Laptop buildLaptopWith(String model, String brand, float price, @NotNull MultipartFile photo,
+                                   String os, int memory, String description) throws HttpException {
+        try {
+            var generatedLaptop = new Laptop();
+            generatedLaptop.setModel(model);
+            generatedLaptop.setBrand(DesktopBrand.valueOf(brand));
+            generatedLaptop.setPrice(price);
+            generatedLaptop.setPhoto(photo.getBytes());
+            generatedLaptop.setOs(DesktopOS.valueOf(os));
+            generatedLaptop.setMemory(memory);
+            generatedLaptop.setDescription(description);
+            generatedLaptop.setItemsInStock(1);
+            return generatedLaptop;
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }

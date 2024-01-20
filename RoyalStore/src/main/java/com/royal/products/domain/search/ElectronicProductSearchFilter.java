@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 @Data
 public class ElectronicProductSearchFilter {
+    private String id;
     private String model;
     private Integer lowerPriceBond;
     private Integer upperPriceBond;
@@ -21,6 +22,7 @@ public class ElectronicProductSearchFilter {
     @NotNull
     protected Criteria getCriteria() {
         var criteria = new Criteria();
+        if (id != null) criteria.and("id").is(id);
         if (memory != null) criteria.and("memory").lte(memory);
         if (model != null) criteria.and("model").is(model);
         if (lowerPriceBond != null && upperPriceBond != null)
