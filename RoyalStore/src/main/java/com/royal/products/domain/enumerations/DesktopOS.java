@@ -1,5 +1,5 @@
 package com.royal.products.domain.enumerations;
 
 public enum DesktopOS {
-    Linux, Windows, MacOS
+    Linux, Windows10, Windows11, macOS
 }
