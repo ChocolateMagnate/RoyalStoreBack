@@ -2,7 +2,7 @@ package com.royal.users.controller;
 
 import com.royal.errors.HttpException;
 import com.royal.products.domain.ElectronicProduct;
-import com.royal.products.domain.enumerations.ProductStorage;
+import com.royal.products.domain.characteristics.specifiers.ProductStorage;
 import com.royal.users.domain.details.AuthenticatedUserDetails;
 import com.royal.users.domain.details.LoginUserCredentials;
 import com.royal.users.domain.details.PublicUserDetails;

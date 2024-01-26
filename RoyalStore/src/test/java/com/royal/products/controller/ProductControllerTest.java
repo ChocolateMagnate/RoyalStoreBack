@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-import com.royal.products.LaptopFixtureInitializer;
-import com.royal.products.domain.Laptop;
-import com.royal.products.domain.enumerations.DesktopOS;
-import com.royal.products.domain.search.ElectronicProductSearchFilter;
-import com.royal.products.domain.search.LaptopSearchFilter;
-import com.royal.products.repository.LaptopRepository;
+import com.royal.products.ProductFixtureInitializer;
+import com.royal.products.domain.ElectronicProduct;
+import com.royal.products.domain.GenericProductProperty;
+import com.royal.products.domain.characteristics.CharacteristicsSet;
+import com.royal.products.domain.characteristics.specifiers.DesktopOS;
+import com.royal.products.domain.characteristics.candidates.DesktopOperatingSystemCharacteristic;
+import com.royal.products.domain.requests.SearchElectronicProductRequest;
+import com.royal.products.repository.ElectronicProductRepository;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -38,16 +39,17 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.UnsupportedEncodingException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WithAnonymousUser
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(properties = "spring.config.location=classpath:application.yaml")
-class LaptopControllerTest {
+class ProductControllerTest {
     @Autowired
-    private LaptopRepository laptopRepository;
+    private ElectronicProductRepository electronicProductRepository;
     @Autowired
     private WebApplicationContext context;
-    private LaptopFixtureInitializer fixture;
+    private ProductFixtureInitializer fixture;
     private MockMvc mvc;
 
     @BeforeAll
@@ -55,40 +57,37 @@ class LaptopControllerTest {
        this.mvc = MockMvcBuilders.webAppContextSetup(context)
                .apply(SecurityMockMvcConfigurers.springSecurity())
                .build();
-       this.fixture = new LaptopFixtureInitializer(laptopRepository);
+       this.fixture = new ProductFixtureInitializer(electronicProductRepository);
     }
 
     @AfterAll
     void tearDown() {
-        laptopRepository.deleteAll();
+        electronicProductRepository.deleteAll();
     }
 
     @Test
-    void testGetLaptopsByText() throws Exception {
+    void testGetProductsByText() throws Exception {
         String text = "large display";
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .post("/get-laptops-by-text").contentType(MediaType.APPLICATION_JSON)
-                        .content(text)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/get-products-by-search")
+                        .content(text).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn();
         assertDoesNotThrow(() -> {
             JSONArray response = buildJsonArray(result);
             assertTrue(response.length() > 0);
-            ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
-            Laptop laptop = mapper.convertValue(response.get(0), Laptop.class);
         });
     }
 
     @Test
     public void shouldRejectEmptySearchQuery() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/get-laptops-by-text")
+        mvc.perform(MockMvcRequestBuilders.post("/get-products-by-search")
                 .content("").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     public void shouldGiveEmptyArrayForNonexistentKeywords() throws Exception {
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/get-laptops-by-text")
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/get-products-by-search")
                         .content("linux").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -100,70 +99,74 @@ class LaptopControllerTest {
 
     @Test
     void testGetLaptopsWithFields() throws Exception {
-        var filter = new LaptopSearchFilter();
-        filter.setUpperPriceBond(2000);
-        filter.setOs(DesktopOS.Windows10);
+        var filter = new SearchElectronicProductRequest();
+        filter.setUpperPriceBond(20000);
+        filter.addCharacteristic(new DesktopOperatingSystemCharacteristic(DesktopOS.Windows10));
         JSONObject body = buildJsonObject(filter);
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/get-laptops")
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/get-products")
                 .content(body.toString()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-        var laptops = buildJsonArray(result);
-        assertTrue(() -> laptops.length() > 0);
+        var products = buildJsonArray(result);
+        assertTrue(() -> products.length() > 0);
     }
 
     @Test
     public void shouldRejectEmptyFilter() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/get-laptops")
+        mvc.perform(MockMvcRequestBuilders.post("/get-products")
                 .content("").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     public void shouldGiveEmptyArrayIfFilterDoesNotMatchAnything() throws Exception {
-        var filter = new LaptopSearchFilter();
-        filter.setOs(DesktopOS.Linux);
-        JSONObject body = buildJsonObject(filter);
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/get-laptops")
-                .content(body.toString()).contentType(MediaType.APPLICATION_JSON))
+        var filter = new SearchElectronicProductRequest();
+        filter.addCharacteristic(new DesktopOperatingSystemCharacteristic(DesktopOS.Linux));
+        String body = buildJsonObject(filter).toString();
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/get-products")
+                .content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-        var laptops = buildJsonArray(result);
-        assertEquals(laptops.length(), 0);
+        var products = buildJsonArray(result);
+        assertEquals(products.length(), 0);
     }
 
     @Test
-    void testGetRandomLaptops() throws Exception {
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/get-random-laptops"))
+    void testGetRandomProducts() throws Exception {
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/get-random-products"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-        JSONArray laptops = buildJsonArray(result);
-        assertTrue(laptops.length() > 0);
+        JSONArray products = buildJsonArray(result);
+        assertTrue(products.length() > 0);
     }
 
     @Test
     @WithMockUser(authorities = {"admin"})
-    void testCreateLaptop() throws Exception {
-        Laptop laptop = fixture.generateTestingLaptop();
+    void testCreateProduct() throws Exception {
+        ElectronicProduct product = fixture.generateTestingProduct();
         var photo = new MockMultipartFile("photo", "mocked-photo.png",
-                MediaType.TEXT_PLAIN_VALUE, laptop.getPhoto());
+                MediaType.TEXT_PLAIN_VALUE, product.getPhoto());
+        String characteristics = new ObjectMapper().writeValueAsString(product.getCharacteristics());
 
-
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.multipart("/create-laptop")
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.multipart("/create-product")
                 .file(photo)
-                .param("model", laptop.getModel())
-                .param("brand", laptop.getBrand().toString())
-                .param("price", String.valueOf(laptop.getPrice()))
-                .param("os", laptop.getOs().toString())
-                .param("memory", String.valueOf(laptop.getMemory()))
-                .param("description", laptop.getDescription()))
+                .param("model", product.getModel())
+                .param("brand", product.getCharacteristicByKey(GenericProductProperty.Brand).toString())
+                .param("price", String.valueOf(product.getPrice()))
+                .param("os", product.getCharacteristicByKey(GenericProductProperty.OperatingSystem).toString())
+                .param("memory", String.valueOf(product.getMemory()))
+                .param("storage", product.getStorage().toString())
+                .param("description", product.getDescription())
+                .param("category", product.getCategory().toString())
+                .param("characteristics", characteristics))
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
 
         // Now we want to verify the returned response body points to a valid product in the database.
         String id = result.getResponse().getContentAsString();
-        var filter = new ElectronicProductSearchFilter();
+        var filter = new SearchElectronicProductRequest();
         filter.setId(id);
         JSONObject body = buildJsonObject(filter);
         mvc.perform(MockMvcRequestBuilders.post("/get-products")
@@ -173,38 +176,41 @@ class LaptopControllerTest {
 
     @Test
     @WithMockUser(authorities = {"admin"})
-    public void rejectLaptopCreationIfAnyFieldIsMissing() throws Exception {
-        Laptop laptop = fixture.generateTestingLaptop();
-        laptop.setPhoto(null);
-        laptop.setOs(null);
-        mvc.perform(MockMvcRequestBuilders.multipart("/create-laptop")
-                .param("model", laptop.getModel())
-                .param("price", String.valueOf(laptop.getPrice())))
+    public void rejectProductCreationIfAnyFieldIsMissing() throws Exception {
+        ElectronicProduct product = fixture.generateTestingProduct();
+        product.setPrice(null);
+        mvc.perform(MockMvcRequestBuilders.multipart("/create-product")
+                .param("model", product.getModel())
+                .param("price", String.valueOf(product.getPrice())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     @WithMockUser(authorities = {"admin"})
-    void testUpdateLaptop() throws Exception {
-        Laptop laptop = getExistingLaptop();
+    void testUpdateProduct() throws Exception {
+        ElectronicProduct product = getExistingLaptop();
         var photo = new MockMultipartFile("photo", "mocked-photo.png",
-                MediaType.TEXT_PLAIN_VALUE, laptop.getPhoto());
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
-                        .multipart("/update-laptop/" + laptop.getId())
+                MediaType.TEXT_PLAIN_VALUE, product.getPhoto());
+        var characteristics = new CharacteristicsSet();
+        characteristics.add(new DesktopOperatingSystemCharacteristic(DesktopOS.Windows11));
+        characteristics.add(product.getCharacteristicByKey(GenericProductProperty.Brand));
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.multipart("/update-product")
                 .file(photo)
-                .param("model", laptop.getModel() + " Pro Max")
-                .param("brand", String.valueOf(laptop.getBrand()))
-                .param("price", String.valueOf(laptop.getPrice() + 400))
-                .param("os", String.valueOf(DesktopOS.Windows11))
-                .param("memory", String.valueOf(laptop.getMemory() + 8))
-                .param("description", laptop.getDescription()))
+                .param("id", product.getId())
+                .param("model", product.getModel() + " Pro Max")
+                .param("price", String.valueOf(product.getPrice() + 400))
+                .param("memory", String.valueOf(product.getMemory() + 8))
+                .param("storage", product.getStorage().toString())
+                .param("category", product.getCategory().toString())
+                .param("description", product.getDescription())
+                .param("characteristics", new ObjectMapper().writeValueAsString(characteristics)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        // Similarly to the test where we created a laptop above, we need to make
-        // sure the returned id points to a valid laptop object in the database.
+        // Similarly to the test where we created a product above, we need to make
+        // sure the returned id points to a valid product object in the database.
         String id = result.getResponse().getContentAsString();
-        var filter = new ElectronicProductSearchFilter();
+        var filter = new SearchElectronicProductRequest();
         filter.setId(id);
         JSONObject body = buildJsonObject(filter);
         mvc.perform(MockMvcRequestBuilders.post("/get-products")
@@ -214,48 +220,47 @@ class LaptopControllerTest {
 
     @Test
     @WithMockUser(authorities = {"admin"})
-    public void rejectLaptopUpdateIfAnyFieldsAreMissing() throws Exception {
-        Laptop laptop = getExistingLaptop();
-        laptop.setPhoto(null);
-        laptop.setOs(null);
-        mvc.perform(MockMvcRequestBuilders.multipart("/update-laptop/" + laptop.getId())
-                        .param("model", laptop.getModel())
-                        .param("price", String.valueOf(laptop.getPrice())))
+    public void rejectProductUpdateIfAnyFieldsAreMissing() throws Exception {
+        ElectronicProduct product = getExistingLaptop();
+        product.setPhoto(null);
+        mvc.perform(MockMvcRequestBuilders.multipart("/update-product")
+                        .param("model", product.getModel())
+                        .param("price", String.valueOf(product.getPrice())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
-    void testDeleteLaptop() throws Exception {
+    void testDeleteProduct() throws Exception {
         MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .get("/get-random-laptops")).andReturn();
-        JSONArray laptops = buildJsonArray(result);
-        var target = (JSONObject)laptops.get(0);
+                .get("/get-random-products")).andReturn();
+        JSONArray products = buildJsonArray(result);
+        var target = (JSONObject)products.get(0);
         String deletedId = target.getString("id");
-        mvc.perform(MockMvcRequestBuilders.delete("/delete-laptop/" + deletedId))
+        mvc.perform(MockMvcRequestBuilders.delete("/delete-product/" + deletedId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+
         //Finally, we check if the laptop under the same id still exists after we deleted it.
-        var filter = new ElectronicProductSearchFilter();
+        var filter = new SearchElectronicProductRequest();
         filter.setId(deletedId);
         JSONObject body = buildJsonObject(filter);
         result = mvc.perform(MockMvcRequestBuilders.post("/get-products")
                 .content(body.toString()).contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
-        laptops = buildJsonArray(result);
-        for (int index = 0; index < laptops.length(); ++index) {
-            var laptop = (JSONObject)laptops.get(index);
-            String givenId = laptop.getString("id");
+        products = buildJsonArray(result);
+        for (int index = 0; index < products.length(); ++index) {
+            var product = (JSONObject)products.get(index);
+            String givenId = product.getString("id");
             assertNotEquals(deletedId, givenId);
         }
     }
 
-    private Laptop getExistingLaptop() throws Exception {
-        MvcResult result = mvc.perform(MockMvcRequestBuilders
-                        .get("/get-random-laptops"))
+    private ElectronicProduct getExistingLaptop() throws Exception {
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/get-random-products"))
                 .andReturn();
         var mapper = new ObjectMapper();
-        JSONArray laptops = buildJsonArray(result);
-        String laptopJsonString = laptops.getString(0);
-        return mapper.readValue(laptopJsonString, Laptop.class);
+        JSONArray products = buildJsonArray(result);
+        String productJsonString = products.getString(0);
+        return mapper.readValue(productJsonString, ElectronicProduct.class);
     }
 
     @NotNull

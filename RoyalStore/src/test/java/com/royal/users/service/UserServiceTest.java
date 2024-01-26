@@ -2,12 +2,16 @@ package com.royal.users.service;
 
 import com.royal.auth.JwtService;
 import com.royal.errors.HttpException;
-import com.royal.products.service.ProductService;
+import com.royal.products.service.ElectronicProductService;
 import com.royal.users.domain.details.AuthenticatedUserDetails;
 import com.royal.users.domain.details.LoginUserCredentials;
 import com.royal.users.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.*;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +26,7 @@ public class UserServiceTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ProductService productService;
+    private ElectronicProductService electronicProductService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -31,7 +35,7 @@ public class UserServiceTest {
 
     @BeforeAll
     public void setup() {
-        this.userService = new UserService(this.userRepository, this.productService, this.passwordEncoder, this.jwtService);
+        this.userService = new UserService(this.userRepository, this.electronicProductService, this.passwordEncoder, this.jwtService);
     }
 
     @AfterAll
@@ -133,14 +137,14 @@ public class UserServiceTest {
         }
     }
 
-    private AuthenticatedUserDetails getMockedInvalidUser() {
+    private @NotNull AuthenticatedUserDetails getMockedInvalidUser() {
         var invalidUser = new AuthenticatedUserDetails();
         invalidUser.setEmail(RandomStringUtils.random(20, "qwertyuiopashknman1921"));
         invalidUser.setPassword(RandomStringUtils.randomAlphabetic(32));
         return invalidUser;
     }
 
-    private AuthenticatedUserDetails getMockedValidUser() {
+    private @NotNull AuthenticatedUserDetails getMockedValidUser() {
         var validUser = new AuthenticatedUserDetails();
         String username = RandomStringUtils.randomAlphabetic(12);
         String domain = RandomStringUtils.randomAlphabetic(13);
@@ -149,14 +153,14 @@ public class UserServiceTest {
         return validUser;
     }
 
-    private LoginUserCredentials getMockedInvalidCredentials() {
+    private @NotNull LoginUserCredentials getMockedInvalidCredentials() {
         var invalidUser = new LoginUserCredentials();
         invalidUser.setEmail(RandomStringUtils.random(20, "qwertyuiopashknman1921"));
         invalidUser.setPassword(RandomStringUtils.randomAlphabetic(32));
         return invalidUser;
     }
 
-    private LoginUserCredentials getMockedValidCredentials() {
+    private @NotNull LoginUserCredentials getMockedValidCredentials() {
         var validUser = new LoginUserCredentials();
         String username = RandomStringUtils.randomAlphabetic(12);
         String domain = RandomStringUtils.randomAlphabetic(13);
