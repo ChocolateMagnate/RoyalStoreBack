@@ -6,27 +6,21 @@ info:
 servers:
   - url: 'http://localhost:8080'
 tags:
-  - name: users
-    description: Endpoints related to authenticating and managing goods of a single user. Often times they require the JWT as authentication method.
-  - name: laptops
-    description: Endpoints used to create, delete and manage products in the laptops category. Requires the "admin" role.
-  - name: smartphones
-    description: Endpoints used to create, delete and manage products in the smartphones category. Requires the "admin" role.
-  - name: products
-    description: Generic and polymorphic endpoints that work with all product categories.
-components:
-  securitySchemes:
-    jwt:
-      type: apiKey
-      in: header
-      name: Authorization
-      description: JSON Web Token that conveys user claims and signature. It's needed for all authenticated endpoints.
+  - name: USERS
+    description: >
+      Endpoints related to authenticating and managing goods of a single user. 
+      Often times they require the JWT as authentication method.
+  - name: PRODUCTS
+    description: > 
+      Generic and polymorphic endpoints that work with all product categories. Normal users can query 
+      and search for products, but it requires the "admin" authority to create/delete/update them.
+
 paths:
   /register:
     post:
       summary: Creates a new user entry in the database.
       tags:
-        - users
+        - USERS
       requestBody:
         description: User credentials, the email, password and remember-me flag.
         required: true
@@ -61,7 +55,7 @@ paths:
     post:
       summary: Attempts to log user in using JWT authentication.
       tags:
-        - users
+        - USERS
       requestBody:
         description: Credentials of the user, email, raw text password and the remember-me flag.
         required: true
@@ -104,7 +98,7 @@ paths:
                     description: The roles user have.
                     example: ["admin"]
                   profilePicture:
-                    type: array
+                    type: file
         '404':
           description: No user is registered under the given email.
         '400':
@@ -116,7 +110,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -141,7 +135,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -166,7 +160,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -191,7 +185,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -217,7 +211,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -244,7 +238,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -270,7 +264,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -296,7 +290,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -323,7 +317,7 @@ paths:
       security:
         - jwt: []
       tags:
-        - users
+        - USERS
       parameters:
         - name: email
           in: path
@@ -345,52 +339,36 @@ paths:
 
   /get-products:
     post:
-      summary: Searches for products by parameters.
+      summary: Searches for products by queried parameters.
       description: This endpoint accepts a set of properties and tries to filter out the products that satisfy it.
       tags:
-        - products
+        - PRODUCTS
       requestBody:
-        description: The product-independent search filter to look for products with.
+        description: The JSON object describing the criteria to search by.
         content:
           application/json:
             schema:
-              type: object
-            properties:
-              model:
-                type: string
-                description: The string of the model to search.
-                example: "Lenovo ThinkBook 14"
-              memory:
-                type: int
-                description: The available memory in gigabytes.
-                example: 12
-              lowerPriceBond:
-                type: int
-                description: The lower price bond in dollars to show.
-                example: 150
-              upperPriceBond:
-                type: int
-                description: The upper price bond in dollars to show.
+              $ref: '#/components/requestBodies/SearchElectronicProductRequest'
       responses:
         '200':
-          description: All products were found and returned to the caller.
+          description: All products were found and returned to the caller. Empty list is returned if no products are found.
 
   /get-random-products:
     get:
       summary: Retrieves random products.
       description: This endpoint returns random products from the store before anything is shown.
       tags:
-        - products
+        - PRODUCTS
       responses:
         '200':
-          description: Products were found and returned.
+          description: Products were found and returned. Returns an empty list if no products are in the database.
 
-  /search-products-by-search:
+  /get-products-by-search:
     post:
       summary: Retrieves the products by a search query.
       description: This endpoint will take the string provided by user and find all products that contain the keywords in their description field.
       tags:
-        - products
+        - PRODUCTS
       requestBody:
         description: The search query of user.
         content:
@@ -401,7 +379,7 @@ paths:
         '200':
           description: Any products that match the search are collected and transmitted.
 
-  /get-laptops-by-text:
+  /get-products-by-text:
     post:
       summary: Retrieves all laptops using search query.
       description: This endpoint looks for any laptops that contain keywords in their "description" field.
@@ -418,327 +396,161 @@ paths:
         '200':
           description: Returns all laptops that satisfy the search query.
 
-  /get-laptops:
+  /create-product:
     post:
-      summary: Retrieves all laptops by filter.
-      description: This endpoint accepts a filter object that specifies a number of properties the user is looking for and searches for any products that satisfy them.
-      tags:
-        - laptops
-      requestBody:
-        description: The filter object to sort the laptops out.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            properties:
-              lowerPriceBond:
-                type: int
-                description: The smallest price in dollars to show. Anything below it is not displayed.
-                example: 150
-              upperPriceBond:
-                type: int
-                description: The largest price in dollars to show. Anything above it is not displayed.
-                example: 100000
-              memory:
-                type: int
-                description: Built-in RAM in gigabytes.
-                example: 16
-              brand:
-                type: string
-                description: The producer of laptop.
-                example: "Dell"
-              os:
-                type: string
-                description: Pre-installed operating system.
-                example: "Windows"
-              model:
-                type: string
-                description: The advertised model name.
-                example: "ThinkPad X1 Carbon"
-      responses:
-        '200':
-          description: All laptops satisfying the criteria were found and returned.
-
-  /get-random-laptops:
-    get:
-      summary: Gives random laptops.
-      description: Searches for some random laptops from the database. This endpoint is primarily used to populate the homepage before any requests are made.
-      tags:
-        - laptops
-      responses:
-        '200':
-          description: Random laptops were collected and returned.
-
-  /create-laptop:
-    post:
-      summary: Creates a new laptop in the store.
+      summary: Creates a new product in the store. Only users having the "admin" role can do this action.
       security:
-        - jwt: ["admin"]
+        - jwt: [ "admin" ]
       tags:
-        - laptops
+        - PRODUCTS
       requestBody:
-        description: The new laptop object to save. If the same laptop already exists in the database, its stock count will be incremented isntead.
+        description: >
+          The new product JSON object to save. If the same laptop already exists in the database,
+          its stock count will be incremented instead.
         content:
           multipart/form-data:
             schema:
               type: object
-            properties:
-              model:
-                type: string
-                description: The model name to save by.
-                example: "Asus Zenbook Duo"
-              brand:
-                type: string
-                description: The producer of laptop.
-                example: "Asus"
-              price:
-                type: int
-                description: The price of laptop in dollars.
-                example: 129
-              photo:
-                type: file
-                description: The thumbnail picture of the laptop. Accepts .png, .jpeg and .webp formats.
-              os:
-                type: string
-                description: The operating system pre-installed on the laptop.
-                example: "Linux"
-              memory:
-                type: int
-                description: The available RAM in gigabytes.
-                example: 8
-              description:
-                type: string
-                description: The description string. It will be used to search the laptop by keywords it contains. May contain advertised text.
-                example: "The innovative dual-screen design makes it the best laptop for tech enthusiasts who need the best productivity solution and effortless multitasking."
+              items:
+                $ref: '#/components/requestBodies/RawElectronicProductRequest'
       responses:
         '200':
-          description: Laptop was successfully added to the store and the laptop id is returned in the response body.
+          description: Product was successfully added to the store and the id is returned in the response body.
           content:
             text/plain:
               schema:
                 type: string
           example: "65a7d879f59b3048b2d6af93"
+        '400':
+          description: > 
+            One of the necessary fields are missing or they don't follow the standard format. 
+            The invalid fields are listed in the response body.
+          content:
+            text/plain:
+              schema:
+                type: string
+          example: "No request fields can be null: price, category"
         '401':
           description: The user is either logged out or doesn't have the "admin" role required to add products.
 
-  /update-laptop:
+  /update-product:
     post:
-      summary: Edits an existing laptop.
-      description: Modifies parameters of the existing laptop. It can be used to change price, picture, available items, etc.
+      summary: Edits an existing product. Requires the "admin" privilege.
+      description: > 
+        Modifies parameters of the existing laptop. It can be used to change price, picture, available 
+        items, etc. The request must always include the id of the target product to mutate and must 
+        list the whole new product to replace it with.
       tags:
-        - laptops
-      parameters:
-        - name: id
-          in: path
-          description: The laptop id to edit.
-          required: true
-          example: "65a7d8b6ba978db8f5fd58b0"
-          schema:
-            type: string
+        - PRODUCTS
+      security:
+        - jwt: ["admin"]
       requestBody:
         description: A new laptop object to substitute the previous one by.
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              items:
+                $ref: "#/components/requestBodies/RawElectronicProductRequest"
       responses:
         '200':
-          description: The laptop was successfully edited. Beware the previous changes do not save.
+          description: The product was successfully edited. Beware the previous changes do not save.
         '401':
           description: The user is either logged out or doesn't have the "admin" role required to add products.
         '404':
-          description: The target laptop does not exist.
+          description: The target product does not exist for the given id.
 
-  /delete-laptop:
+  /delete-product:
     delete:
-      summary: Removes a laptop from sale.
-      description: This endpoint will remove the laptop from the database and make it no longer sellable.
+      summary: Removes a product from sale.
+      description: This endpoint will remove the product from the database and make it no longer sellable.
       tags:
-        - laptops
+        - PRODUCTS
       parameters:
         - name: id
           in: path
-          description: The laptop id.
+          description: The product id.
           required: true
           example: "65a7d9697e4f1d05492a32bd"
           schema:
             type: string
       responses:
         '200':
-          description: Laptop was deleted successfully.
+          description: Product was deleted successfully.
         '401':
           description: The user is either logged out or doesn't have the "admin" role required to add products.
         '404':
-          description: The target laptop does not exist.
+          description: The target product does not exist for the given id.
 
-  /get-smartphones-by-text:
-    post:
-      summary: Retrieves all smartphones that contain the specified keywords in their description.
-      description: This endpoint accepts the search query string provided by user and searches for all smartphones that contain the keywords in them.
-      tags:
-        - smartphones
-      requestBody:
-        description: The search string.
-        content:
-          text/plain:
-            schema:
-              type: string
-      responses:
-        '200':
-          description: All laptops fitting the request were found and returned.
-
-  /get-random-smartphones:
-    get:
-      summary: Retrieves random smartphones.
-      description: This endpoint searches for some random smartphones to display.
-      tags:
-        - smartphones
-      responses:
-        '200':
-          description: Random smartphones were found and returned.
-
-  /get-smartphones:
-    post:
-      summary: Retrieves all smartphones by the filter.
-      description: This endpoint accepts a set of parameters provided by user and finds all smartphones that match them.
-      tags:
-        - smartphones
-      requestBody:
-        description: The filter object to sort the smartphones out.
-        content:
-          application/json:
-            schema:
-              type: object
-            properties:
-              lowerPriceBond:
-                type: int
-                description: The lowest price to display in dollars.
-                example: 100
-              upperPriceBond:
-                type: int
-                description: The highest price to display in dollars.
-                example: 1200
-              memory:
-                type: int
-                description: The installed RAM in gigabytes.
-                example: 4
-              brand:
-                type: string
-                description: The producer of smartphone.
-                example: "Nokia"
-              os:
-                type: string
-                description: The pre-installed mobile OS.
-                example: "Android"
-              model:
-                type: string
-                description: The model of the product, it will be displayed as its title.
-                example: "Nokia 3310"
-      responses:
-        '200':
-          description: All smartphones fitting the request were found.
-
-  /create-smartphone:
-    post:
-      summary: Creates a new smartphone in the store.
-      description: This endpoint will create a new smartphone that can be searched, displayed and bought. Requires "admin" role.
-      security:
-        - jwt: ["admin"]
-      tags:
-        - smartphones
-      requestBody:
-        description: The smartphone object to make.
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-            properties:
-              model:
-                type: string
-                description: The model string as advertised by producer.
-                example: "Motorola Edge"
-              brand:
-                type: string
-                description: The producer of the smartphone.
-                example: "Motorola"
-              price:
-                type: int
-                description: The price of the product in dollars.
-                example: 350
-              photo:
-                type: file
-                description: The demonstration photo to display of the product.
-              os:
-                type: string
-                description: The pre-installed operating system.
-                example: "Android"
-              memory:
-                type: int
-                description: Pre-installed RAM in gigabytes.
-                example: 3
-              description:
-                type: string
-                description: The description string of the product.
-                example: "Feel the comfort of curved edges aligning with the contours of your hand."
-      responses:
-        '200':
-          description: Smartphone was created and its id was returned.
-          content:
-            text/plain:
-              schema:
-                type: string
-        '401':
-          description: User is logged off or doesn't have the "admin" role required to add new products.
-        '400':
-          description: Some of the submitted data is not specified or wrong, for example submitting text in price or nonexistent OS.
-
-  /update-smartphone:
-    post:
-      summary: Edits an existing smartphone.
-      description: Replaces a smartphone with new data.
-      security:
-        - jwt: ["admin"]
-      tags:
-        - smartphones
-      parameters:
-        - name: id
-          in: path
-          description: The smartphone id.
-          required: true
-          schema:
+components:
+  securitySchemes:
+    jwt:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JSON Web Token that conveys user claims and signature. It's needed for all authenticated endpoints.
+  requestBodies:
+    RawElectronicProductRequest:
+      content:
+        multipart/form-data:
+          id:
             type: string
-      requestBody:
-        description: The new smartphone object with modified properties.
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-      responses:
-        '200':
-          description: Smartphone was edited and its id was returned.
-          content:
-            text/plain:
-              schema:
-                type: string
-        '401':
-          description: User is logged off or doesn't have the "admin" role required to add new products.
-        '400':
-          description: Some of the submitted data is not specified or wrong, for example submitting text in price or nonexistent OS.
-
-  /delete-smartphone:
-    delete:
-      summary: Removes a smartphone from the store.
-      security:
-        - jwt: ["admin"]
-      tags:
-        - smartphones
-      parameters:
-        - name: id
-          in: path
-          description: Smartphone id to delete.
-          required: true
-          example: "65a7e357fce9bc922703249b"
-          schema:
+            description: The id of the product.
+            required: false
+          model:
             type: string
-      responses:
-        '200':
-          description: Target smartphone was deleted successfully.
-        '401':
-          description: User is logged off or doesn't have the "admin" role required to delete products.
+            description: The model name to save by.
+            example: "Asus Zenbook Duo"
+          price:
+            type: int
+            description: The price of laptop in dollars.
+            example: 129
+          photo:
+            type: file
+            description: The thumbnail picture of the product. Accepts .png, .jpeg and .webp formats.
+          memory:
+            type: int
+            description: The available RAM in gigabytes.
+            example: 8
+          category:
+            type: string
+            description: The type of the electronic product being sold, currently either laptops or smartphones.
+            example: "Laptop"
+          description:
+            type: string
+            description: >
+              The description string. It will be used to search the product by keywords
+               it contains. May contain advertised or copy-writed text.
+            example: >
+              "The innovative dual-screen design makes it the best laptop for tech enthusiasts who need the 
+               best productivity solution and effortless multitasking."
+          characteristics:
+            type: array
+            description: >
+              The JSON array of key-value pairs containing variable information about the product that 
+              may not be present in all product categories. This includes product-specific information 
+              like GPU, licenses; optional values like memory latency speed or floating-point operations 
+              per second; and product-specific set of values, such as desktop/mobile OS, manufacturer, etc.
+              All characteristics must contain the "key" value that describes what type of data they describe, 
+              followed by the second unique key that differentiates the characteristic from the rest, such as
+              "desktopOS" for desktop operating systems, "mobileBrand" for manufacturers of phones/tablets, etc.
+            example: [ { "key": "OperatingSystem", "desktopOS": "Windows11" },
+                       { "key": "DesktopBrand",    "desktopBrand": "Lenovo" } ]
+    SearchElectronicProductRequest:
+      content:
+        application/json:
+          model:
+            type: string
+            description: The string of the model to search.
+            example: "Lenovo ThinkBook 14"
+          memory:
+            type: int
+            description: The available memory in gigabytes.
+            example: 12
+          lowerPriceBond:
+            type: int
+            description: The lower price bond in dollars to show.
+            example: 150
+          upperPriceBond:
+            type: int
+            description: The upper price bond in dollars to show.
