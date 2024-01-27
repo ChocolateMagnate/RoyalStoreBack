@@ -5,8 +5,8 @@ import com.nimbusds.jwt.SignedJWT;
 import com.royal.auth.JwtService;
 import com.royal.errors.HttpException;
 import com.royal.products.domain.ElectronicProduct;
-import com.royal.products.domain.enumerations.ProductStorage;
-import com.royal.products.service.ProductService;
+import com.royal.products.domain.characteristics.specifiers.ProductStorage;
+import com.royal.products.service.ElectronicProductService;
 import com.royal.users.domain.User;
 import com.royal.users.domain.details.AuthenticatedUserDetails;
 import com.royal.users.domain.details.LoginUserCredentials;
@@ -31,12 +31,12 @@ import java.util.regex.Pattern;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final ProductService productService;
+    private final ElectronicProductService productService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Autowired
-    public UserService(UserRepository userRepository, ProductService productService,
+    public UserService(UserRepository userRepository, ElectronicProductService productService,
                        PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.productService = productService;

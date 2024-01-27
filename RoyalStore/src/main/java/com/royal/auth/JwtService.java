@@ -1,8 +1,8 @@
 package com.royal.auth;
 
 import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.royal.errors.HttpException;
@@ -13,9 +13,12 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.ECPrivateKey;
+import java.security.spec.ECGenParameterSpec;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -25,7 +28,6 @@ import java.util.Optional;
 public class JwtService {
     @Value("${JWT_SINGING_KEY}")
     private String jwtSingingKey;
-
 
     public static boolean isJwtRequest(@NotNull HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
@@ -68,19 +70,19 @@ public class JwtService {
     }
 
     public SignedJWT generateJwtToken(String subject, boolean rememberMe) throws HttpException {
-        KeyPair pair = generateKeyPair();
-        JWSSigner signer = new RSASSASigner(pair.getPrivate());
-        Date expiration = getExpirationTime(Instant.now(), rememberMe);
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(subject)
-                .issuer("http://localhost:8080")
-                .expirationTime(expiration)
-                .claim("rememberMe", rememberMe)
-                .issueTime(new Date())
-                .build();
-
+        JWSSigner signer = null;
         try {
-            SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("kid").build(), claimsSet);
+            KeyPair pair = generateKeyPair();
+            signer = new ECDSASigner((ECPrivateKey) pair.getPrivate());
+            Date expiration = getExpirationTime(Instant.now(), rememberMe);
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .subject(subject)
+                    .issuer("http://localhost:8080")
+                    .expirationTime(expiration)
+                    .claim("rememberMe", rememberMe)
+                    .issueTime(new Date())
+                    .build();
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.ES256).keyID("kid").build(), claimsSet);
             signedJWT.sign(signer);
             return signedJWT;
         } catch (JOSEException e) {
@@ -102,10 +104,10 @@ public class JwtService {
         return Date.from(expiration);
     }
 
-    @SneakyThrows(NoSuchAlgorithmException.class)
+    @SneakyThrows({NoSuchAlgorithmException.class, InvalidAlgorithmParameterException.class})
     private static KeyPair generateKeyPair() {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048);
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
+        keyPairGenerator.initialize(new ECGenParameterSpec("secp256r1"));
         return keyPairGenerator.generateKeyPair();
     }
 }

@@ -1,4 +1,4 @@
-package com.royal.products.domain.enumerations;
+package com.royal.products.domain;
 
 public enum ProductCategory {
     Laptop, Smartphone

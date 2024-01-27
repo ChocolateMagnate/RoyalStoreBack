@@ -3,4 +3,9 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/testing
 
+# This file uses hardcoded properties for the use of testing and "works out of the box"
+# experience, since this is just a testing database, and we delete it at the end of tests anyway.
 JWT_SINGING_KEY: EH5Rnxg9KsdSu283ruRGtHaS2qNUCxhc
+server:
+  address: localhost
+  port: 8080

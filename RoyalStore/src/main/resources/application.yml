@@ -3,8 +3,8 @@ spring:
     mongodb:
       host: mongodb
       database: store
-      authentication-database: store
-      uri: ${MONGODB_URL}
+      authentication-database: admin
+      uri: ${MONGODB_URI}
   security:
     oauth2:
       client:
