@@ -21,8 +21,11 @@ import java.util.Optional;
 @Log4j2
 @Configuration
 public class OAuth2Filter extends OncePerRequestFilter {
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
+
+    public OAuth2Filter(@Autowired JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     private final AntPathRequestMatcher[] publicEndpointMatchers = {
             new AntPathRequestMatcher("/register"),

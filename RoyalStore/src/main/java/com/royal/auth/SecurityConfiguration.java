@@ -2,7 +2,7 @@ package com.royal.auth;
 
 import com.royal.auth.filters.EmailAndPasswordLoginFilter;
 import com.royal.auth.filters.OAuth2Filter;
-import com.royal.repositories.UserRepository;
+import com.royal.users.service.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,19 +16,27 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtDecoder jwtDecoder;
+    private final JwtService jwtService;
+
     @Autowired
-    private UserRepository userRepository;
+    SecurityConfiguration(UserService userService, PasswordEncoder passwordEncoder,
+                          JwtDecoder jwtDecoder, JwtService jwtService) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtDecoder = jwtDecoder;
+        this.jwtService = jwtService;
+    }
 
     private static final String[] authenticatedEndpoints = {"/get-cart", "/get-liked", "/get-purchased",
             "/add-product-to-cart", "/add-product-to-liked", "/purchase", "/remove-product-from-cart",
@@ -52,45 +60,33 @@ public class SecurityConfiguration {
 
     @Bean
     public UserDetailsService userDetails() {
-        return email -> userRepository.findByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException("User by email " + email + " is not found."));
+        return userService::loadUserByEmail;
     }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         var provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(userDetails());
         return provider;
     }
+
     @Bean
     public AuthenticationManager authenticationManager(@NotNull AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation("https://accounts.google.com");
-    }
-
-    @Bean
-    public JwtService jwt() {
-        return new JwtService();
-    }
 
     @Bean
     public EmailAndPasswordLoginFilter emailAndPasswordLoginFilter() {
-        return new EmailAndPasswordLoginFilter();
+        return new EmailAndPasswordLoginFilter(jwtService, userService);
     }
 
     @Bean
     public OAuth2Filter oAuth2Filter() {
-        return new OAuth2Filter();
+        return new OAuth2Filter(jwtService);
     }
 
 }

@@ -4,7 +4,7 @@ spring:
       host: mongodb
       database: store
       authentication-database: store
-      uri: ${MONGODB_URI}
+      uri: ${MONGODB_URL}
   security:
     oauth2:
       client:
