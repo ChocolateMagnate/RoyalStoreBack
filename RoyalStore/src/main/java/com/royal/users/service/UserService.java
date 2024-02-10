@@ -116,16 +116,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void purchase(String email, String productId) throws HttpException {
-        User user = getUserOrThrow404(email);
-        ArrayList<String> purchased = user.getPurchased(), cart = user.getCart();
-        if (!purchased.contains(productId)) purchased.add(productId);
-        cart.remove(productId);
-        user.setPurchased(purchased);
-        user.setCart(cart);
-        userRepository.save(user);
-    }
-
     private @NotNull User getUserOrThrow404(String email) throws HttpException {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) return user.get();
@@ -138,7 +128,6 @@ public class UserService {
         return switch (storage) {
             case Cart -> user.getCart();
             case Liked -> user.getLiked();
-            case Purchased -> user.getPurchased();
         };
     }
 

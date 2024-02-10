@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.royal.products.ProductFixtureInitializer;
+import com.royal.products.ProductFixtureManager;
 import com.royal.products.domain.ElectronicProduct;
 import com.royal.products.domain.GenericProductProperty;
 import com.royal.products.domain.characteristics.CharacteristicsSet;
@@ -49,7 +49,7 @@ class ProductControllerTest {
     private ElectronicProductRepository electronicProductRepository;
     @Autowired
     private WebApplicationContext context;
-    private ProductFixtureInitializer fixture;
+    private ProductFixtureManager fixture;
     private MockMvc mvc;
 
     @BeforeAll
@@ -57,7 +57,7 @@ class ProductControllerTest {
        this.mvc = MockMvcBuilders.webAppContextSetup(context)
                .apply(SecurityMockMvcConfigurers.springSecurity())
                .build();
-       this.fixture = new ProductFixtureInitializer(electronicProductRepository);
+       this.fixture = new ProductFixtureManager(electronicProductRepository);
     }
 
     @AfterAll

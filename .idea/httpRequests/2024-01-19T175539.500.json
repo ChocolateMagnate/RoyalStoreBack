@@ -1,0 +1,6 @@
+{
+  "timestamp": "2024-01-19T15:55:38.988+00:00",
+  "status": 500,
+  "error": "Internal Server Error",
+  "path": "/login"
+}

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-233.13135.103">
+  <component name="dataSourceStorageLocal" created-in="IU-232.10072.27">
     <data-source name="mongodb@root" uuid="e041c0ad-fe81-4906-89a3-3e2ca30f0f09">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MONGO" />
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MONGO" exact-version="0" />
       <user-name>root</user-name>
       <schema-mapping />
     </data-source>
     <data-source name="store@mongodb" uuid="d3fa0906-a7d4-47b2-9f7f-9ca86d95bfef">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MONGO" />
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MONGO" exact-version="0" />
       <schema-mapping />
     </data-source>
   </component>

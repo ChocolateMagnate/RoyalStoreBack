@@ -11,6 +11,7 @@ import com.royal.products.domain.requests.RawElectronicProductRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -49,15 +50,15 @@ public class ElectronicProduct {
         this.characteristics = other.characteristics;
     }
 
-    public ElectronicProduct(@NotNull LinkedHashMap<String, Object> contents) throws ClassCastException {
-        this.id = contents.get("id").toString();
-        this.price = Float.parseFloat(contents.get("price").toString());
-        this.model = contents.get("model").toString();
-        this.description = contents.get("description").toString();
-        this.storage = Integer.parseInt(contents.get("storage").toString());
-        this.memory = Integer.parseInt(contents.get("memory").toString());
-        this.photo = (byte[]) contents.get("photo");
-        this.category = ProductCategory.valueOf(contents.get("category").toString());
+    public ElectronicProduct(@NotNull LinkedHashMap<String, Object> content) {
+        this.id = content.get("id").toString();
+        this.price = Float.parseFloat(content.get("price").toString());
+        this.model = content.get("model").toString();
+        this.description = content.get("description").toString();
+        this.storage = Integer.parseInt(content.get("storage").toString());
+        this.memory = Integer.parseInt(content.get("memory").toString());
+        this.photo = (byte[]) content.get("photo");
+        this.category = ProductCategory.valueOf(content.get("category").toString());
         Characteristic<?> brand = (this.category == ProductCategory.Laptop)
                 ? new DesktopBrandCharacteristic()
                 : new MobileBrandCharacteristic();
@@ -122,6 +123,7 @@ public class ElectronicProduct {
         return getCharacteristicByKey(concreteKey);
     }
 
+    @Contract(pure = true)
     public Characteristic<?> getCharacteristicByKey(CharacteristicKey key) throws NoSuchElementException {
         for (Characteristic<?> characteristic : this.characteristics)
             if (characteristic.getKey() == key) return characteristic;

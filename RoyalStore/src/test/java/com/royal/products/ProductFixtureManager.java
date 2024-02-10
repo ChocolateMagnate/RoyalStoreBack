@@ -1,50 +1,46 @@
 package com.royal.products;
 
+import com.royal.FixtureInitializer;
 import com.royal.products.domain.ElectronicProduct;
-import com.royal.products.domain.characteristics.specifiers.DesktopBrand;
-import com.royal.products.domain.characteristics.specifiers.DesktopOS;
 import com.royal.products.domain.characteristics.candidates.DesktopBrandCharacteristic;
 import com.royal.products.domain.characteristics.candidates.DesktopOperatingSystemCharacteristic;
+import com.royal.products.domain.characteristics.specifiers.DesktopBrand;
+import com.royal.products.domain.characteristics.specifiers.DesktopOS;
 import com.royal.products.repository.ElectronicProductRepository;
+import jakarta.annotation.PreDestroy;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 @Component
-public class ProductFixtureInitializer implements ApplicationRunner {
+public class ProductFixtureManager extends FixtureInitializer implements ApplicationRunner {
     private final ElectronicProductRepository electronicProductRepository;
 
-    public ProductFixtureInitializer(@Autowired ElectronicProductRepository electronicProductRepository) {
+    public ProductFixtureManager(@Autowired ElectronicProductRepository electronicProductRepository) {
         this.electronicProductRepository = electronicProductRepository;
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        ArrayList<ElectronicProduct> laptops = loadLaptopsFromFixture();
+        ArrayList<ElectronicProduct> laptops = loadObjectsFromFixture("fixtures/laptops.yaml", ElectronicProduct.class);
         this.electronicProductRepository.saveAll(laptops);
     }
 
-    public ArrayList<ElectronicProduct> loadLaptopsFromFixture() throws IOException {
-        ArrayList<LinkedHashMap<String, Object>> contents = getYamlContents();
-        ArrayList<ElectronicProduct> laptops = new ArrayList<>(contents.size());
-        for (LinkedHashMap<String, Object> content : contents) {
-            laptops.add(new ElectronicProduct(content));
-        }
-        return laptops;
+    @PreDestroy
+    public void deleteTestingDatabase() {
+        this.electronicProductRepository.deleteAll();
     }
 
     public @NotNull ElectronicProduct generateTestingProduct() {
         try {
-            ArrayList<LinkedHashMap<String, Object>> contents = getYamlContents();
+            ArrayList<LinkedHashMap<String, Object>> contents = getYamlContents("fixtures/laptops.yaml");
             var product = new ElectronicProduct(contents.get(0));
             product.setPhoto(RandomStringUtils.random(345).getBytes());
             return product;
@@ -61,11 +57,4 @@ public class ProductFixtureInitializer implements ApplicationRunner {
         }
     }
 
-    private ArrayList<LinkedHashMap<String, Object>> getYamlContents() throws IOException {
-        Yaml yaml = new Yaml();
-        ClassLoader loader = ProductFixtureInitializer.class.getClassLoader();
-        try (InputStream consumer = loader.getResourceAsStream("fixtures/laptops.yaml")) {
-            return yaml.load(consumer);
-        }
-    }
 }

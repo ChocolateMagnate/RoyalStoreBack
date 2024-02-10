@@ -379,23 +379,6 @@ paths:
         '200':
           description: Any products that match the search are collected and transmitted.
 
-  /get-products-by-text:
-    post:
-      summary: Retrieves all laptops using search query.
-      description: This endpoint looks for any laptops that contain keywords in their "description" field.
-      tags:
-        - laptops
-      requestBody:
-        description: The string to search by.
-        required: true
-        content:
-          text/plain:
-            schema:
-              type: string
-      responses:
-        '200':
-          description: Returns all laptops that satisfy the search query.
-
   /create-product:
     post:
       summary: Creates a new product in the store. Only users having the "admin" role can do this action.
