@@ -1,0 +1,207 @@
+# The fixtures used to initialise dummy users. Because users have a bulk of metadata
+# attached to them, we do not write out all of these fields but only the necessary ones
+# since cart, orders and such will be initalised to default states, such as empty arrays.
+
+# To generate random passwords: https://www.random.org/passwords/?num=5&len=32&format=html&rnd=new
+# To generate random usernames: https://jimpix.co.uk/words/username-generator.asp#results
+
+- email: flores@fex.com
+  username: "Flores the Fez"
+  password: "NfzHKbCE5ccezGyNratWBvEDg4nqNzZA"
+
+- email: Justeene@Jodhpur.com
+  username: "Justeene the Jodhpur"
+  password: "qTCJGEcUGUWXy9ULhgJZEgYFxhMGpe67"
+
+- email: Leondrea@Lacey.com
+  username: "Leondrea the Lacey"
+  password: "ZCdjnP5xUtb7gYx8kZYXJQU8sU8ANZVK"
+
+- email: Justeene@Jut.com
+  username: "Justeene the Jut"
+  password: "aqyW3sRybPA6F3egmgdMwJ2WhrSHrz75"
+
+- email: Leondrea@Lovely.com
+  username: "Leondrea the Lovely"
+  password: "JW3CTXXMpKTJWnpQBLPsCRdKjnScwBYS"
+
+- email: Leondrea@Left.com
+  username: "Leondrea the Left"
+  password: "mxnNmaTnxmqHwThQtAxeghRWvMAWppgJ"
+
+- email: Lukewarm@Leondrea.com
+  username: "Lukewarm Leondrea"
+  password: "j7CY8RMLRBKZz6UsKFM934tZDHUvb7Y6"
+
+- email: JJusteene@Jutr.com
+  username: "JJusteene the Jutr"
+  password: "j3VxwvWLRqejeKzRJ37MtvmZkkGcsvfM"
+
+- email: Coolheaded@Leondrea.com
+  username: "Coolheaded Leondrea"
+  password: "9mDq46Zg2yV6mS6YB3g6kRrkAdSdqQet"
+
+- email: Leondrea@Born.com
+  username: "Leondrea the Born"
+  password: "EghPK776mtKeS8urkwkSgx9qD56WKqDd"
+
+- email: Disengaged@Leondrea.com
+  username: "Disengaged Leondrea"
+  password: "LECLq87WnsHAJZjdKWsWnHAYt6vDhcba"
+
+- email: JLeondrea@Baptized.com
+  username: "JLeondrea the Baptized"
+  password: "Bum3rRnAcHEFLaFUus5RyapmJgVnQTfF"
+
+- email: Depressed@Leondrea.com
+  username: "Depressed Leondrea"
+  password: "Yy37rWXUHhq9YPJnqSzk4CqBBZ8AzNDZ"
+
+- email: Churchgoing@Leondrea.com
+  username: "Churchgoing Leondrea"
+  password: "UzSBp7YAZXqD35MGqPdyWhfpp9FfNF6Y"
+
+- email: Leondrea@Addicted.com
+  username: "Leondrea the Addicted"
+  password: "QeVLdkDev6whE8mj7aTESLewCjc7dvGe"
+
+- email: Flappy@Leondrea.com
+  username: "Flappy Leondrea"
+  password: "Jc7wCdSMZccwpsst2Y9qR5dPaxLhSe8e"
+
+- email: Coolheaded@Leondrea.com
+  username: "Coolheaded Leondrea"
+  password: "wcJycdkyHmycBnvjf2J4CAHw85PY5TRL"
+
+- email: Composed@Leondrea.com
+  username: "Composed Leondrea"
+  password: "XNcwwY9h6XYsUtXpC5cN9AdeLc4ekd9r"
+
+- email: Leondrea@Badass.com
+  username: "Leondrea the Badass"
+  password: "Gb8gFh9WT2kq5b3CLurS8X28weddDCds"
+
+- email: Aculeated@Leondrea.com
+  username: "Aculeated Leondrea"
+  password: "yeUU2tanKf5tzKPJ98fcc4AX48vkAmRu"
+
+- email: Flores@Valdez.com
+  username: "Flores the Valdez"
+  password: "SwkER7evw3GdVwcSaWn6UCUkVmpuFVkP"
+
+- email: Justa@gmail.com
+  username: "Justa"
+  password: "ZETk2YHEeqHdNPVWwVLq637UWGc6vuex"
+
+- email: Justella@gmail.com
+  username: "Justella"
+  password: "99DzyFMmBaY8j5WS53dHb4T8NWH9jHRH"
+
+- email: Florella@gmail.com
+  username: "Florella"
+  password: "YuttrwH222FBYztSQp24HCZ45jfZXbnJ"
+
+- email: Leondreabug@gmail.com
+  username: "Leondreabug"
+  password: "ekdrLxhDgdbBCmaWMXzGWAEZr7L4rDY9"
+
+- email: Justbob@gmail.com
+  username: "Justbob"
+  password: "uy6H5d3LQkNMR3HjUSU2JLJUDpkPpBUr"
+
+- email: Leondrbob@gmail.com
+  username: "Leondrbob"
+  password: "9faLB32Jv8LQvzNJYsmt8bASZa5JC4pN"
+
+- email: Divorced@Muffin.com
+  username: "Divorced Muffin"
+  password: "afQWfwHWUQDMxgY4K67StVCcReZZNdtk"
+
+- email: Leondreakitten@gmail.com
+  username: "Leondreakitten"
+  password: "SGdmJdYQYEQDHJfHdwe3PAhARmULVRCn"
+
+- email: Flora@gmail.com
+  username: "Flora"
+  password: "qMWa6XK8FzNb9w6ECRf4EejB8J6LPCxZ"
+
+- email: Pointy@Chip.com
+  username: "Pointy Chip"
+  password: "BpPc99DY76Rz8eyWGDJQHBrVp38VgfNw"
+
+- email: Florbob@gmail.com
+  username: "Florbob"
+  password: "nBxZ7CrnfkaYsYuqXTHKwgD9ycGT3X74"
+
+- email: Leondrea@Bear.com
+  username: "Leondrea Bear"
+  password: "sDDAD8DvpUjKeuCqVUN2SFnnFBXFGnSf"
+
+- email: doofus@gmail.com
+  username: "doofus"
+  password: "LQZpHFHtsmdmUA9wBPp8qGGK2c2adWSg"
+
+- email: clamour@gmail.com
+  username: "clamour"
+  password: "MuGUvG8fcd9uvEX66Zrw3KJrKnsvLREz"
+
+- email: flashy@gmail.com
+  username: "flashy"
+  password: "WegXWqRJmZcWhS5HnfuCs3YtgrmSj8Z5"
+
+- email: gecko@gmail.com
+  username: "gecko"
+  password: "skV7RGABptuFEgvW9fbYxyThHT8b25C5"
+
+- email: balk@gmail.com
+  username: "balk"
+  password: "UtWX6X498m4Vc22Uv4EyA8Zfdne9PrFr"
+
+- email: trolleybus@gmail.com
+  username: "trolleybus"
+  password: "dsX23fbgChQDgzvCLHsjHLftbHVLZGez"
+
+- email: nocturnal@gmail.com
+  username: "nocturnal"
+  password: "7HjC8Tu53yJ3U5cYSLqaasWqw95VxBJE"
+
+- email: bollard@gmail.com
+  username: "bollard"
+  password: "GnZExcKRdW998fe3NDd8KsGg7nrDh7rK"
+
+- email: victory@gmail.com
+  username: "victory"
+  password: "hcAGvqT5VD5KNRT2zD7rFqpctzdLw97U"
+
+- email: cartwheel@gmail.com
+  username: "cartwheel"
+  password: "H3AYgGem5apGRtQhC33NXm3fH8n4YH5U"
+
+- email: dentist@gmail.com
+  username: "dentist"
+  password: "kphzskxMgMyvE2aZuEYLdGWRzwsD5URf"
+
+- email: peafowl@gmail.com
+  username: "peafowl"
+  password: "rvxTtQnKUTecVGh6SrYKjY3m5kfdwvU6"
+
+- email: antique@gmail.com
+  username: "antique"
+  password: "jBbUY7WWhVC3aqugaN8yZxFas3TDZ5Jt"
+
+- email: shaky@gmail.com
+  username: "shaky"
+  password: "vdp8DfssPGrnXw4wusbnM9xs6sr8ZNyR"
+
+- email: shriek@gmail.com
+  username: "shriek"
+  password: "Mt9YtBAEtc4HH75YPXwfCTGpbmQc54Up"
+
+- email: hardball@gmail.com
+  username: "hardball"
+  password: "9pZfKj9FdyNygAsrmtXST8HpBvWqw7zM"
+
+- email: barrel@gmail.com
+  username: "barrel"
+  password: "NfzHKbCE5ccezGyNratWBvEDg4nqNzZA"
+

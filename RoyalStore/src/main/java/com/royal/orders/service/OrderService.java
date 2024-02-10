@@ -6,7 +6,9 @@ import com.royal.orders.domain.Page;
 import com.royal.orders.repository.OrderRepository;
 import com.royal.products.domain.ElectronicProduct;
 import com.royal.products.repository.ElectronicProductRepository;
+import com.royal.users.domain.User;
 import com.royal.users.repository.UserRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,10 +32,12 @@ public class OrderService {
         this.electronicProductRepository = electronicProductRepository;
     }
 
-    public Set<Order> getAllOrdersOfUser(String userId) throws HttpException {
-        return this.userRepository.findById(userId).orElseThrow(
-                () -> new HttpException(HttpStatus.NOT_FOUND, "No user found under the id " + userId))
+    public Set<Order> getAllOrdersOfUser(String email) throws HttpException {
+        Set<Order> orders = this.userRepository.findByEmail(email).orElseThrow(
+                () -> new HttpException(HttpStatus.NOT_FOUND, "No user found under the email " + email))
                 .getOrders();
+        if (orders == null) return new HashSet<>();
+        else return orders;
     }
 
     public Page<Order> getPagedOrders(String userId, long requestedPageIndex) throws HttpException {
@@ -55,7 +59,7 @@ public class OrderService {
                 new HttpException(HttpStatus.NOT_FOUND, "No order under the id " + orderId));
     }
 
-    public String makeOrder(String userId, String productId) throws HttpException {
+    public String makeOrder(String email, String productId) throws HttpException {
         // Normally you would want to use some banking API to request a purchase, but since this is
         // a demonstration project, payment integration is not topical (at the moment) and we make
         // orders simply by adding them to the order collection.
@@ -63,19 +67,18 @@ public class OrderService {
         newOrder.setIssuedAt(Instant.now());
         newOrder.setLastModifiedAt(newOrder.getIssuedAt());
         newOrder.setPurchasedProduct(getProductOrThrow(productId));
-        Set<Order> orders = getOrdersOrThrow(userId);
+        Set<Order> orders = getOrdersOrThrow(email);
         boolean sameOrderExists = orders.stream().anyMatch(order ->
                 Objects.equals(order.getPurchasedProduct().getId(), productId));
         if (sameOrderExists) return productId;
         Order savedOrder = this.orderRepository.save(newOrder);
+        addOrderIdToUser(email, savedOrder);
         return savedOrder.getId();
     }
 
     public void cancelOrder(String userId, String orderId) throws HttpException {
         Set<Order> orders = getOrdersOrThrow(userId);
-        Optional<Order> orderToCancel = orders.stream().filter(
-                order -> Objects.equals(order.getId(), orderId))
-                .findFirst();
+        Optional<Order> orderToCancel = this.orderRepository.findById(orderId);
         if (orderToCancel.isPresent()) {
             Order cancelledOrder = orderToCancel.get().cancel();
             this.orderRepository.save(cancelledOrder);
@@ -88,10 +91,20 @@ public class OrderService {
         this.orderRepository.save(progressedOrder);
     }
 
-    private Set<Order> getOrdersOrThrow(String userId) throws HttpException {
-        return this.userRepository.findById(userId).orElseThrow(
+    private void addOrderIdToUser(String email, Order order) throws HttpException {
+        Optional<User> targetUser = this.userRepository.findByEmail(email);
+        if (targetUser.isEmpty()) throw new HttpException
+                (HttpStatus.NOT_FOUND, "No user under the email " + email);
+        User user = targetUser.get();
+        user.getOrders().add(order);
+    }
+
+    private @NotNull Set<Order> getOrdersOrThrow(String userId) throws HttpException {
+        Set<Order> orders = this.userRepository.findById(userId).orElseThrow(
                 () -> new HttpException(HttpStatus.NOT_FOUND, "No user under the id " + userId))
                 .getOrders();
+        if (orders == null) return new HashSet<>();
+        else return orders;
     }
 
     private Order getOrderOrThrow(String orderId) throws HttpException {

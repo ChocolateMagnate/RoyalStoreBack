@@ -1,20 +1,27 @@
 package com.royal.orders.service;
 
+import com.royal.errors.HttpException;
+import com.royal.orders.domain.OrderStatus;
 import com.royal.orders.domain.Page;
 import com.royal.orders.domain.Order;
 import com.royal.orders.repository.OrderRepository;
 import com.royal.products.repository.ElectronicProductRepository;
+import com.royal.users.UserFixtureManager;
+import com.royal.users.domain.User;
 import com.royal.users.repository.UserRepository;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+
+import java.io.IOException;
+import java.time.Instant;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,31 +30,32 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(properties = "spring.config.location=classpath:application.yaml")
 class OrderServiceTest {
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private ElectronicProductRepository electronicProductRepository;
     @Autowired
     private OrderRepository orderRepository;
     private OrderService orderService;
+    private UserFixtureManager fixtures;
+    private User customer;
 
     @BeforeAll
-    public void setUp() {
-        // All ordering logic requires a valid authenticated user, hence we manually authenticate
-        // a mock user in order to be able to test this service separately from the controller.
-        String principal = "65b66e9457030f82dd517e73";
-        String password = "NfzHKbCE5ccezGyNratWBvEDg4nqNzZA";
-        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, password);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    public void setUp() throws IOException {
+        this.fixtures = new UserFixtureManager(userRepository, passwordEncoder);
+        this.customer = fixtures.getFixtureUser();
+        this.orderService = new OrderService(orderRepository, userRepository, electronicProductRepository);
     }
 
-    private String getMockedAuthenticatedUserId() {
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    private String getCustomerEmail() {
+        return this.customer.getEmail();
     }
 
     @Test
     public void testGetAllOrdersOfUser() {
         assertDoesNotThrow(() -> {
-            Set<Order> allOrders = this.orderService.getAllOrdersOfUser(getMockedAuthenticatedUserId());
+            Set<Order> allOrders = this.orderService.getAllOrdersOfUser(getCustomerEmail());
             if (!allOrders.isEmpty()) for (Order order : allOrders)
                 assertTrue(this.orderRepository.existsById(order.getId()));
         });
@@ -55,7 +63,7 @@ class OrderServiceTest {
 
     @Test
     public void testGetPagedOrders() {
-        String id = getMockedAuthenticatedUserId();
+        String id = getCustomerEmail();
         assertDoesNotThrow(() -> {
             Page<Order> firstPage = this.orderService.getPagedOrders(id, 0);
             HashSet<Order> introspection = new HashSet<>(firstPage.getContent());
@@ -76,19 +84,64 @@ class OrderServiceTest {
 
     @Test
     public void testGetOrderById() {
-        String id = getMockedAuthenticatedUserId();
+        String email = getCustomerEmail();
+        assertDoesNotThrow(() -> {
+            Set<Order> allOrders = this.orderService.getAllOrdersOfUser(email);
+            for (Order order : allOrders) assertTrue(this.orderRepository.existsById(order.getId()));
+        });
 
     }
 
     @Test
     public void testMakeOrder() {
+        String email = getCustomerEmail();
+        assertDoesNotThrow(() -> {
+            String orderId = this.orderService.makeOrder(email, getExistingProductId());
+            assertTrue(this.orderRepository.existsById(orderId));
+        });
     }
 
     @Test
     public void testCancelOrder() {
+        String email = getCustomerEmail();
+        assertDoesNotThrow(() -> {
+            Optional<Order> optionalOrder = requestMakeOrder();
+            assertTrue(optionalOrder.isPresent());
+            String orderId = optionalOrder.get().getId();
+            Instant issuedAt = optionalOrder.get().getLastModifiedAt();
+
+            this.orderService.cancelOrder(email, orderId);
+            Optional<Order> cancelledOrder = this.orderRepository.findById(orderId);
+            assertTrue(cancelledOrder.isPresent());
+            assertSame(cancelledOrder.get().getStatus(), OrderStatus.Cancelled);
+            Instant cancelledAt = cancelledOrder.get().getLastModifiedAt();
+            assertNotEquals(issuedAt, cancelledAt);
+        });
     }
 
     @Test
     public void testProgressOrderStatus() {
+        assertDoesNotThrow(() -> {
+            Optional<Order> requestedOrder = requestMakeOrder();
+            assertTrue(requestedOrder.isPresent());
+            Order pendingOrder = requestedOrder.get();
+            String orderId = pendingOrder.getId();
+            assertSame(OrderStatus.Pending, pendingOrder.getStatus());
+            this.orderService.progressOrderStatus(orderId);
+
+            requestedOrder = this.orderRepository.findById(orderId);
+            assertTrue(requestedOrder.isPresent());
+            Order confirmedOrder = requestedOrder.get();
+            assertSame(OrderStatus.Confirmed, confirmedOrder.getStatus());
+        });
+    }
+
+    private String getExistingProductId() {
+        return this.electronicProductRepository.findAll().get(0).getId();
+    }
+
+    private @NotNull Optional<Order> requestMakeOrder() throws HttpException {
+        String orderId = this.orderService.makeOrder(getCustomerEmail(), getExistingProductId());
+        return this.orderRepository.findById(orderId);
     }
 }

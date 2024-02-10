@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -30,7 +31,7 @@ public class User implements UserDetails {
     private ArrayList<String> cart = new ArrayList<>();
     private ArrayList<String> liked = new ArrayList<>();
     @DBRef
-    private Set<Order> orders;
+    private Set<Order> orders = new HashSet<>();
 
     public PublicUserDetails getPublicDetails() {
         var details = new PublicUserDetails();

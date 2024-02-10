@@ -15,18 +15,18 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "orders")
-public class ProductOrder {
+public class Order {
     @Id
     private String id;
     private Instant issuedAt;
     private Instant lastModifiedAt;
     private ElectronicProduct purchasedProduct;
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.Pending;
     private int quantity;
     private float price;
 
     @Contract(pure = true)
-    public ProductOrder(@NotNull ProductOrder other) {
+    public Order(@NotNull Order other) {
         this.id = other.id;
         this.issuedAt = other.issuedAt;
         this.lastModifiedAt = other.lastModifiedAt;
@@ -44,15 +44,15 @@ public class ProductOrder {
         this.issuedAt = Instant.parse(iso8601DateFormatString);
     }
 
-    public ProductOrder cancel() {
-        var cancelledOrder = new ProductOrder(this);
-        if (cancelledOrder.status != OrderStatus.Cancelled) cancelledOrder.status = OrderStatus.Cancelled;
+    public Order cancel() {
+        var cancelledOrder = new Order(this);
+        if (cancelledOrder.status == OrderStatus.Pending) cancelledOrder.status = OrderStatus.Cancelled;
         cancelledOrder.lastModifiedAt = Instant.now();
         return cancelledOrder;
     }
 
-    public ProductOrder progress() {
-        var progressedOrder = new ProductOrder(this);
+    public Order progress() {
+        var progressedOrder = new Order(this);
         if (this.status == OrderStatus.Pending) progressedOrder.status = OrderStatus.Confirmed;
         progressedOrder.lastModifiedAt = Instant.now();
         return progressedOrder;
