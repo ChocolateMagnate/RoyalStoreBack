@@ -9,8 +9,8 @@ import com.royal.products.ProductFixtureManager;
 import com.royal.products.domain.ElectronicProduct;
 import com.royal.products.domain.GenericProductProperty;
 import com.royal.products.domain.characteristics.CharacteristicsSet;
-import com.royal.products.domain.characteristics.specifiers.DesktopOS;
 import com.royal.products.domain.characteristics.candidates.DesktopOperatingSystemCharacteristic;
+import com.royal.products.domain.characteristics.specifiers.DesktopOS;
 import com.royal.products.domain.requests.SearchElectronicProductRequest;
 import com.royal.products.repository.ElectronicProductRepository;
 import org.jetbrains.annotations.Contract;
@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -58,11 +57,6 @@ class ProductControllerTest {
                .apply(SecurityMockMvcConfigurers.springSecurity())
                .build();
        this.fixture = new ProductFixtureManager(electronicProductRepository);
-    }
-
-    @AfterAll
-    void tearDown() {
-        electronicProductRepository.deleteAll();
     }
 
     @Test

@@ -4,14 +4,13 @@ import com.royal.FixtureInitializer;
 import com.royal.orders.domain.Order;
 import com.royal.orders.repository.OrderRepository;
 import com.royal.products.domain.ElectronicProduct;
-import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
 import java.util.ArrayList;
 
-public class OrderFixtureManager extends FixtureInitializer implements ApplicationRunner {
+public class OrderFixtureManager extends FixtureInitializer implements ApplicationRunner, AutoCloseable {
     private final OrderRepository orderRepository;
 
     public OrderFixtureManager(@Autowired OrderRepository orderRepository) {
@@ -26,8 +25,8 @@ public class OrderFixtureManager extends FixtureInitializer implements Applicati
         this.orderRepository.saveAll(orders);
     }
 
-    @PreDestroy
-    public void deleteTestingDatabase() {
+    @Override
+    public void close() throws Exception {
         this.orderRepository.deleteAll();
     }
 }

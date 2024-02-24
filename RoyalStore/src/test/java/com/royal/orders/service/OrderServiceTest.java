@@ -1,12 +1,11 @@
 package com.royal.orders.service;
 
 import com.royal.errors.HttpException;
+import com.royal.orders.domain.Order;
 import com.royal.orders.domain.OrderStatus;
 import com.royal.orders.domain.Page;
-import com.royal.orders.domain.Order;
 import com.royal.orders.repository.OrderRepository;
 import com.royal.products.repository.ElectronicProductRepository;
-import com.royal.users.UserFixtureManager;
 import com.royal.users.domain.User;
 import com.royal.users.repository.UserRepository;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 
 import java.io.IOException;
 import java.time.Instant;
@@ -38,13 +36,11 @@ class OrderServiceTest {
     @Autowired
     private OrderRepository orderRepository;
     private OrderService orderService;
-    private UserFixtureManager fixtures;
     private User customer;
 
     @BeforeAll
     public void setUp() throws IOException {
-        this.fixtures = new UserFixtureManager(userRepository, passwordEncoder);
-        this.customer = fixtures.getFixtureUser();
+        this.customer = getFixtureUser();
         this.orderService = new OrderService(orderRepository, userRepository, electronicProductRepository);
     }
 
@@ -143,5 +139,9 @@ class OrderServiceTest {
     private @NotNull Optional<Order> requestMakeOrder() throws HttpException {
         String orderId = this.orderService.makeOrder(getCustomerEmail(), getExistingProductId());
         return this.orderRepository.findById(orderId);
+    }
+
+    private User getFixtureUser() {
+        return this.userRepository.findAll().get(0);
     }
 }

@@ -1,11 +1,10 @@
 package com.royal.products.service;
 
 import com.royal.products.domain.ElectronicProduct;
-import com.royal.products.domain.characteristics.specifiers.DesktopOS;
 import com.royal.products.domain.characteristics.candidates.DesktopOperatingSystemCharacteristic;
+import com.royal.products.domain.characteristics.specifiers.DesktopOS;
 import com.royal.products.domain.requests.SearchElectronicProductRequest;
 import com.royal.products.repository.ElectronicProductRepository;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -33,11 +32,6 @@ class ProductServiceTest {
         this.electronicProductService = new ElectronicProductService(this.electronicProductRepository, this.template);
     }
 
-    @AfterAll
-    public void tearDown() {
-        this.electronicProductRepository.deleteAll();
-    }
-
     @Test
     public void noIdDuplicatesInDatabase() {
         ArrayList<String> ids = new ArrayList<>((int) (this.electronicProductRepository.count() + 1));
@@ -59,7 +53,7 @@ class ProductServiceTest {
 
     @Test
     public void testGetAllLaptopsByText() {
-        String keyword = "budget";
+        String keyword = "Budget";
         List<ElectronicProduct> productsByDescription = electronicProductService.getProductsByDescription(keyword);
         assertFalse(productsByDescription.isEmpty());
         for (ElectronicProduct laptop : productsByDescription)

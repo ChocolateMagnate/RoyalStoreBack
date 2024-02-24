@@ -3,7 +3,6 @@ package com.royal.users;
 import com.royal.FixtureInitializer;
 import com.royal.users.domain.User;
 import com.royal.users.repository.UserRepository;
-import jakarta.annotation.PreDestroy;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 
 @Order(1)
 @Component
-public class UserFixtureManager extends FixtureInitializer implements ApplicationRunner {
+public class UserFixtureManager extends FixtureInitializer implements ApplicationRunner, AutoCloseable {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -32,11 +31,6 @@ public class UserFixtureManager extends FixtureInitializer implements Applicatio
         this.userRepository.saveAll(users);
     }
 
-    @PreDestroy
-    public void teardown() {
-        this.userRepository.deleteAll();
-    }
-
     public User getFixtureUser() throws IOException {
         ArrayList<User> users = getAllFixtureUsers();
         return users.get(0);
@@ -48,5 +42,10 @@ public class UserFixtureManager extends FixtureInitializer implements Applicatio
         //need to use the password encoder to hash the passwords to mimic real production setting.
         for (User user : users) user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         return users;
+    }
+
+    @Override
+    public void close() throws Exception {
+        this.userRepository.deleteAll();
     }
 }

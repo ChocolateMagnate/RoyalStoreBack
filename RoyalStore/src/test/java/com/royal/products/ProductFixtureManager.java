@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 @Component
-public class ProductFixtureManager extends FixtureInitializer implements ApplicationRunner {
+public class ProductFixtureManager extends FixtureInitializer implements ApplicationRunner, AutoCloseable {
     private final ElectronicProductRepository electronicProductRepository;
 
     public ProductFixtureManager(@Autowired ElectronicProductRepository electronicProductRepository) {
@@ -57,4 +57,8 @@ public class ProductFixtureManager extends FixtureInitializer implements Applica
         }
     }
 
+    @Override
+    public void close() throws Exception {
+        this.electronicProductRepository.deleteAll();
+    }
 }

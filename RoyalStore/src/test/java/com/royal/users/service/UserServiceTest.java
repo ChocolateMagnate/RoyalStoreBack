@@ -8,7 +8,6 @@ import com.royal.users.domain.details.LoginUserCredentials;
 import com.royal.users.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,11 +35,6 @@ public class UserServiceTest {
     @BeforeAll
     public void setup() {
         this.userService = new UserService(this.userRepository, this.electronicProductService, this.passwordEncoder, this.jwtService);
-    }
-
-    @AfterAll
-    public void teardown() {
-        this.userRepository.deleteAll();
     }
 
     @Test
