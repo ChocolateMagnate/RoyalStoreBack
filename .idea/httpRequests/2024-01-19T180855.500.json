@@ -1,6 +1,0 @@
-{
-  "timestamp": "2024-01-19T16:08:55.016+00:00",
-  "status": 500,
-  "error": "Internal Server Error",
-  "path": "/get-random-laptops"
-}

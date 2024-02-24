@@ -1,6 +1,0 @@
-{
-  "timestamp": "2024-01-19T15:57:32.752+00:00",
-  "status": 400,
-  "error": "Bad Request",
-  "path": "/get-cart"
-}
