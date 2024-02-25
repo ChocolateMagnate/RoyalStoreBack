@@ -113,6 +113,7 @@ is running. After you have verified all tests pass, you
 can start the server locally:
 ```commandline
 mvn package -DskipTests
+java -jar target/RoyalStore-0.0.1-SNAPSHOT.jar
 ```
 Now you have a working server with exposed REST API that
 you can query using `curl`, Postman or accept incoming requests.
