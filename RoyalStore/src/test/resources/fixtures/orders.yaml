@@ -1,0 +1,397 @@
+# Notes:
+#   We do not inject the product value because it's somewhat cumbersome, so we
+#   read it in Java instead and initialise from other fixtures, such as laptops.yaml.
+#
+#   Timestamps in orders use the Java's Instant class, which when converted to a string
+#   represents the time in the ISO-8601 time format, which can be summarised as YYYY-MM-DD,
+#   followed by capital letter T and then by time as HH:mm:ss. The same string can be converted
+#   back into an Instant class with the Instant.parse method, so we are using it in here.
+#
+#   To generate MongoDB ID fields: https://observablehq.com/@hugodf/mongodb-objectid-generator
+#   To generate random instants: https://catonmat.net/tools/generate-random-unix-timestamps
+
+
+- id: "65b53902019f6350b8fbca0d"
+  issuedAt: "2023-02-15T14:45:48"
+  lastModifiedAt: "2023-02-15T14:45:48"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53ab5fa4d8870f67afedb"
+  issuedAt: "2005-05-15T06:47:33"
+  lastModified: "2005-05-15T06:53:43"
+  status: "Pending"
+  quantity: 1
+  price: 439.99
+
+- id: "65b53b191fdb16a65c1bc4ab"
+  issuedAt: "2018-03-23T20:04:08"
+  lastModifiedAt: "2024-07-27T05:27:52"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b218176dbd7e3a73bfa"
+  issuedAt: "2008-08-15T18:19:30"
+  lastModifiedAt: "2008-10-16T18:19:30"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b26e95abfe0b033eea1"
+  issuedAt: "2019-08-16T14:57:31"
+  lastModifiedAt: "2020-02-15T14:45:48"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b2e1e05daf82027386b"
+  issuedAt: "2016-11-13T07:31:5"
+  lastModifiedAt: "2016-11-15T08:41:3"
+  status: "Cancelled"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b3255f512fb401698f8"
+  issuedAt: "2004-11-02T18:14:17"
+  lastModifiedAt: "2005-11-02T18:14:17"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b38bcc8369f27e8642a"
+  issuedAt: "2028-12-01T00:40:46"
+  lastModifiedAt: "2029-02-01T05:40:46"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b3ea04dcb158a5d1c40"
+  issuedAt: "2002-02-09T17:43:56"
+  lastModifiedAt: "2002-02-09T19:00:49"
+  status: "Cancelled"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b45ce4239d96433dadb"
+  issuedAt: "2027-02-19T13:27:28"
+  lastModifiedAt: "2027-04-15T13:27:28"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b4a462d38defe3f0f86"
+  issuedAt: "2000-06-18T11:27:28"
+  lastModifiedAt: "2001-02-22T11:27:28"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b51b932daa73d183cff"
+  issuedAt: "2013-01-15T00:25:20"
+  lastModifiedAt: "2013-11-15T12:25:20"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b5739697441287c02c4"
+  issuedAt: "2012-03-28T19:57:03"
+  lastModified: "2012-03-28T19:58:0"
+  status: "Pending"
+  quantity: 1
+  price: 439.99
+
+- id: "65b53b5cd1f4c9c247fc4cdf"
+  issuedAt: "2009-11-10T11:48:37"
+  lastModifiedAt: "2010-01-10T11:48:37"
+  status: "Cancelled"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b61f72f4232f7ebd521"
+  issuedAt: "2003-06-21T19:18:08"
+  lastModifiedAt: "2003-08-21T19:18:08"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b656dbd404b9b509b04"
+  issuedAt: "2013-01-26T20:42:05"
+  lastModifiedAt: "2013-01-26T22:42:05"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b6a73d8e544bc6ba031"
+  issuedAt: "2022-08-09T23:43:09"
+  lastModifiedAt: "2022-11-19T23:43:09"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b6f8e2e12363f44a6f4"
+  issuedAt: "2017-08-05T09:02:23"
+  lastModifiedAt: "2017-11-09T09:02:23"
+  status: "Cancelled"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b747080d0584d2e7075"
+  issuedAt: "2027-06-19T18:33:52"
+  lastModifiedAt: "2027-07-29T18:40:52"
+  status: "Cancelled"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b79017619047af35380"
+  issuedAt: "2000-06-25T01:25:13"
+  lastModifiedAt: "2000-06-30T11:15:23"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b7e17d2423e318a6e53"
+  issuedAt: "2026-04-23T12:29:30"
+  lastModifiedAt: "2026-05-25T12:29:30"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b8350a42d52b4f7afe7"
+  issuedAt: "2029-09-27T01:27:14"
+  lastModifiedAt: "2029-10-27T11:50:44"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b88be772481a5459818"
+  issuedAt: "2001-12-29T23:30:30"
+  lastModifiedAt: "2002-02-29T23:30:30"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b8ddc94802577533091"
+  issuedAt: "2007-03-23T07:51:08"
+  lastModified: "2007-04-26T07:51:08"
+  status: "Confirmed"
+  quantity: 1
+  price: 439.99
+
+- id: "65b53b9161b96c04c046ec6f"
+  issuedAt: "2005-09-09T02:43:38"
+  lastModifiedAt: "2005-09-10T02:00:37"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b96b73e217e94fe71b0"
+  issuedAt: "2001-01-19T06:38:41"
+  lastModifiedAt: "2001-01-23T15:40:32"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53b9bf4bc66b1889dd47e"
+  issuedAt: "2020-01-13T13:06:32"
+  lastModifiedAt: "2020-01-13T23:05:15"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53ba1b60ba0e4c37e185b"
+  issuedAt: "2029-08-18T05:11:29"
+  lastModifiedAt: "2029-08-18T05:21:30"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53ba86f4d6f3327183eaa"
+  issuedAt: "2029-03-15T18:21:32"
+  lastModifiedAt: "2029-03-15T18:23:21"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bacbfb5a5d055e9ce45"
+  issuedAt: "2001-03-06T04:49:29"
+  lastModifiedAt: "2001-03-06T04:59:20"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bb1d846c8566d7c2097"
+  issuedAt: "2009-12-17T00:23:50"
+  lastModifiedAt: "2009-12-17T22:03:51"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bb5f3f0ecd68b76d893"
+  issuedAt: "2026-03-12T11:56:28"
+  lastModifiedAt: "2026-03-13T11:56:28"
+  status: "Cancelled"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bbbd1d765d47f7abbbf"
+  issuedAt: "2022-05-09T13:04:53"
+  lastModifiedAt: "2022-06-05T13:15:53"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bc0fa54c0ed968f93be"
+  issuedAt: "2028-06-01T03:18:57"
+  lastModifiedAt: "2028-06-01T13:19:57"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bc60ccc0f2fd42950da"
+  issuedAt: "2005-05-15T06:47:33"
+  lastModified: "2005-05-15T06:53:43"
+  status: "Pending"
+  quantity: 1
+  price: 439.99
+
+- id: "65b53bca5cb0536983b4febd"
+  issuedAt: "2010-07-22T01:04:51"
+  lastModifiedAt: "2010-07-22T01:14:43"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bcdeef816c0473428ae"
+  issuedAt: "2006-02-08T00:58:08"
+  lastModifiedAt: "2006-02-08T01:38:15"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bd200583e6e7d0fbaf4"
+  issuedAt: "2000-06-29T18:01:54"
+  lastModifiedAt: "2002-06-29T18:11:44"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bd71f884c70a7461d7d"
+  issuedAt: "2007-05-19T15:30:52"
+  lastModifiedAt: "2007-05-19T16:31:02"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53be387f7dd77fb5764fb"
+  issuedAt: "2003-04-01T08:16:47"
+  lastModifiedAt: "2003-04-01T18:18:47"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53be992b97d552fc6dd1d"
+  issuedAt: "2011-05-21T19:28:07"
+  lastModifiedAt: "2011-05-21T19:48:07"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bfff292fb10bc23ee85"
+  issuedAt: "2008-12-05T14:28:22"
+  lastModifiedAt: "2008-12-05T14:38:22"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53bf64a7cab4784887ed6"
+  issuedAt: "2027-05-17T04:18:34"
+  lastModifiedAt: "2027-05-19T04:28:44"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c02edac162320b911e5"
+  issuedAt: "2019-11-23T11:38:28"
+  lastModifiedAt: "2019-11-23T11:58:38"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c079b91721b22378a99"
+  issuedAt: "2024-10-24T12:30:18"
+  lastModifiedAt: "2024-10-25T15:30:18"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c0c5d53b4debe8ae444"
+  issuedAt: "2008-05-27T03:10:22"
+  lastModified: "2008-05-27T13:30:52"
+  status: "Cancelled"
+  quantity: 1
+  price: 439.99
+
+- id: "65b53c150aeca3992722102c"
+  issuedAt: "2020-09-10T20:06:43"
+  lastModifiedAt: "2020-09-12T20:06:43"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c1b007b91ebc1071ee0"
+  issuedAt: "2022-06-15T11:49:04"
+  lastModifiedAt: "2022-06-15T11:50:30"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c20774c836dc1e02991"
+  issuedAt: "2001-07-09T19:43:56"
+  lastModifiedAt: "2001-07-19T19:43:56"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c24b369b9a2afa3f1ec"
+  issuedAt: "2003-12-29T01:00:23"
+  lastModifiedAt: "2003-12-30T01:03:23"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c29ba1aa2180123c87f"
+  issuedAt: "2014-04-25T07:31:01"
+  lastModifiedAt: "2014-04-25T08:42:31"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c2ecd44e479ef4f0daf"
+  issuedAt: "2021-09-07T17:17:46"
+  lastModifiedAt: "2021-09-07T17:19:16"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c32f2c78b1bdbe2754f"
+  issuedAt: "2026-05-03T08:47:15"
+  lastModifiedAt: "2026-05-03T19:47:15"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c37a895aa73c6bf40ce"
+  issuedAt: "2022-04-16T18:39:13"
+  lastModifiedAt: "2023-02-15T14:45:48"
+  status: "Pending"
+  quantity: 2
+  price: 500.00
+
+- id: "65b53c3c5bc18bc2c2a2e1e8"
+  issuedAt: "2012-05-07T07:28:52"
+  lastModifiedAt: "2012-05-12T12:38:50"
+  status: "Confirmed"
+  quantity: 2
+  price: 500.00

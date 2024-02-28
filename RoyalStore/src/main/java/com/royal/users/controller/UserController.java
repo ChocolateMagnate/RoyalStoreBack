@@ -2,7 +2,7 @@ package com.royal.users.controller;
 
 import com.royal.errors.HttpException;
 import com.royal.products.domain.ElectronicProduct;
-import com.royal.products.domain.enumerations.ProductStorage;
+import com.royal.products.domain.characteristics.specifiers.ProductStorage;
 import com.royal.users.domain.details.AuthenticatedUserDetails;
 import com.royal.users.domain.details.LoginUserCredentials;
 import com.royal.users.domain.details.PublicUserDetails;
@@ -42,11 +42,6 @@ public class UserController {
         return userService.getProducts(email, ProductStorage.Liked);
     }
 
-    @GetMapping("/get-purchased")
-    public ArrayList<ElectronicProduct> getPurchased(@RequestParam("email") String email) throws HttpException {
-        return userService.getProducts(email, ProductStorage.Purchased);
-    }
-
     @PutMapping("/add-product-to-cart")
     public void addToCart(@RequestParam("email") String email, @RequestParam("id") String productId) throws HttpException {
         userService.insertProduct(email, productId, ProductStorage.Cart);
@@ -55,11 +50,6 @@ public class UserController {
     @PutMapping("/add-product-to-liked")
     public void addToLied(@RequestParam("email") String email, @RequestParam("id") String productId) throws HttpException {
         userService.insertProduct(email, productId, ProductStorage.Liked);
-    }
-
-    @PutMapping("/purchase")
-    public void addToPurchased(@RequestParam("email") String email, @RequestParam("id") String productId) throws HttpException {
-        userService.purchase(email, productId);
     }
 
     @DeleteMapping("/remove-product-from-cart")
@@ -72,11 +62,5 @@ public class UserController {
     public void removeProductFromLiked(@RequestParam("email") String email,
                                        @RequestParam("id") String productId) throws HttpException {
         userService.deleteProduct(email, productId, ProductStorage.Liked);
-    }
-
-    @DeleteMapping("/remove-product-from-purchased")
-    public void removeProductFromPurchased(@RequestParam("email") String email,
-                                           @RequestParam("id") String productId) throws HttpException {
-        userService.deleteProduct(email, productId, ProductStorage.Purchased);
     }
 }

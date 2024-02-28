@@ -1,151 +1,246 @@
 - id: "65a92b3bc06bc29181576e53"
   model: "Dell XPS 13"
+  category: "Laptop"
   price: 1200.00F
-  brand: "Dell"
-  os: "Windows10"
+  storage: 550
   memory: 16
   description: "Thin and powerful ultrabook with a stunning display."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Dell"
 
 - id: "65a92b57d0db309a7be31f86"
   model: "MacBook Air"
+  category: "Laptop"
   price: 999.00F
-  brand: "Apple"
-  os: "macOS"
+  storage: 1050
   memory: 8
   description: "Lightweight and portable laptop known for its sleek design."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "macOS"
+    - key: DesktopBrand
+      desktopBrand: "Apple"
 
 - id: "65a92b60d164e47387384715"
   model: "HP Spectre x360"
+  category: "Laptop"
   price: 1350.00F
-  brand: "HP"
-  os: "Windows11"
+  storage: 650
   memory: 16
   description: "Convertible laptop with a 360-degree hinge for versatility."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows11"
+    - key: DesktopBrand
+      desktopBrand: "HP"
 
 - id: "65a92b68440eb36a35d6df24"
   model: "Lenovo ThinkPad X1 Carbon"
+  category: "Laptop"
   price: 1500.00F
-  brand: "Lenovo"
-  os: "Windows10"
+  storage: 240
   memory: 16
   description: "Business-oriented laptop with a durable design and strong performance."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Lenovo"
 
 - id: "65a92b742c7d5acf60c653c6"
   model: "Asus ROG Zephyrus G14"
+  category: "Laptop"
   price: 1800.00F
-  brand: "Asus"
-  os: "Windows10"
+  storage: 780
   memory: 32
   description: "Gaming laptop with a powerful AMD Ryzen processor and a high-refresh-rate display."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Asus"
 
 - id: "65a92b7de7aec60355b926fb"
   model: "Acer Swift 3"
+  category: "Laptop"
   price: 700.00F
-  brand: "Acer"
-  os: "Windows10"
+  storage: 300
   memory: 8
   description: "Affordable and lightweight laptop suitable for everyday use."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Acer"
 
 - id: "65a92b8617ef64c1c0c255b1"
   model: "Microsoft Surface Laptop 4"
+  category: "Laptop"
   price: 1300.00F
-  brand: "Microsoft"
-  os: "Windows10"
+  storage: 2050
   memory: 16
   description: "Premium laptop with a sleek design, high-resolution display, and excellent build quality."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Microsoft"
 
 - id: "65a92b8f605953f0630b80d7"
   model: "HP Envy 13"
+  category: "Laptop"
   price: 1100.00F
-  brand: "HP"
-  os: "Windows10"
+  storage: 500
   memory: 16
   description: "Elegant and powerful laptop with a high-quality build and vibrant display."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "HP"
 
 - id: "65a92b97115f682ec4b3f653"
   model: "Razer Blade 15"
+  category: "Laptop"
   price: 2000.00F
-  brand: "Razer"
-  os: "Windows10"
+  storage: 1000
   memory: 32
   description: "Gaming laptop with a sleek design, customizable RGB lighting, and top-tier performance."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Razer"
 
 - id: "65a92ba1dcfdad62623cf6e0"
   model: "LG Gram 17"
+  category: "Laptop"
   price: 1500.00F
-  brand: "LG"
-  os: "Windows10"
+  storage: 600
   memory: 16
   description: "Ultra-lightweight laptop with a large 17-inch display, ideal for productivity."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "LG"
 
 - id: "65a92bab7a6f26375ea51753"
   model: "Dell Inspiron 14"
+  category: "Laptop"
   price: 600.00F
-  brand: "Dell"
-  os: "Windows10"
+  storage: 450
   memory: 8
   description: "Budget-friendly laptop with a compact design and reliable performance."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Dell"
 
 - id: "65a92bb278a2c6fe0cb7e31b"
   model: "Lenovo Legion 5"
+  category: "Laptop"
   price: 1200.00F
-  brand: "Lenovo"
-  os: "Windows10"
+  storage: 950
   memory: 16
   description: "Gaming laptop with powerful graphics, a high-refresh-rate display, and a comfortable keyboard."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Lenovo"
 
 - id: "65a92bb91fbe1f9e3b6c0dda"
   model: "Apple MacBook Pro 16"
+  category: "Laptop"
   price: 2400.00F
-  brand: "Apple"
-  os: "macOS"
+  storage: 680
   memory: 32
   description: "Professional-grade laptop with a large 16-inch Retina display and robust performance."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "macOS"
+    - key: DesktopBrand
+      desktopBrand: "Apple"
 
 - id: "65a92bc0c00366f7ad8a55ef"
   model: "HP Envy 13"
+  category: "Laptop"
   price: 1100.00F
-  brand: "HP"
-  os: "Windows10"
+  storage: 550
   memory: 16
   description: "Elegant and powerful laptop with a high-quality build and vibrant display."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "HP"
 
 - id: "65a92bc8b7bddfb706e1871f"
   model: "Razer Blade 15"
+  category: "Laptop"
   price: 2000.00F
-  brand: "Razer"
-  os: "Windows10"
+  storage: 450
   memory: 32
   description: "Gaming laptop with a sleek design, customizable RGB lighting, and top-tier performance."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Razer"
 
 - id: "65a92bd14ce8bd19dedd714b"
   model: "LG Gram 17"
+  category: "Laptop"
   price: 1500.00F
-  brand: "LG"
-  os: "Windows10"
+  storage: 750
   memory: 16
   description: "Ultra-lightweight laptop with a large 17-inch display, ideal for productivity."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "LG"
 
 - id: "65a92bd8668d6c7b8eab8c5f"
   model: "Dell Inspiron 14"
+  category: "Laptop"
   price: 600.00F
-  brand: "Dell"
-  os: "Windows10"
+  storage: 490
   memory: 8
   description: "Budget-friendly laptop with a compact design and reliable performance."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Dell"
 
 - id: "65a92bdedf2b1303b2e0ab6f"
   model: "Lenovo Legion 5"
+  category: "Laptop"
   price: 1200.00F
-  brand: "Lenovo"
-  os: "Windows10"
+  storage: 500
   memory: 16
   description: "Gaming laptop with powerful graphics, a high-refresh-rate display, and a comfortable keyboard."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "Windows10"
+    - key: DesktopBrand
+      desktopBrand: "Lenovo"
 
 - id: "65a92be64ce219b43ba14796"
   model: "Apple MacBook Pro 16"
+  category: "Laptop"
   price: 2400.00F
-  brand: "Apple"
-  os: "macOS"
+  storage: 3000
   memory: 32
   description: "Professional-grade laptop with a large 16-inch Retina display and robust performance."
+  characteristics:
+    - key: DesktopOperatingSystem
+      desktopOS: "macOS"
+    - key: DesktopBrand
+      desktopBrand: "Apple"

@@ -5,8 +5,8 @@ import com.nimbusds.jwt.SignedJWT;
 import com.royal.auth.JwtService;
 import com.royal.errors.HttpException;
 import com.royal.products.domain.ElectronicProduct;
-import com.royal.products.domain.enumerations.ProductStorage;
-import com.royal.products.service.ProductService;
+import com.royal.products.domain.characteristics.specifiers.ProductStorage;
+import com.royal.products.service.ElectronicProductService;
 import com.royal.users.domain.User;
 import com.royal.users.domain.details.AuthenticatedUserDetails;
 import com.royal.users.domain.details.LoginUserCredentials;
@@ -31,12 +31,12 @@ import java.util.regex.Pattern;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final ProductService productService;
+    private final ElectronicProductService productService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Autowired
-    public UserService(UserRepository userRepository, ProductService productService,
+    public UserService(UserRepository userRepository, ElectronicProductService productService,
                        PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.productService = productService;
@@ -76,7 +76,7 @@ public class UserService {
 
     public PublicUserDetails loginExistingUser(@NotNull LoginUserCredentials credentials) throws HttpException {
         User userInDatabase = userRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new HttpException(HttpStatus.FOUND,
+                .orElseThrow(() -> new HttpException(HttpStatus.NOT_FOUND,
                         "User by email " + credentials.getEmail() + " already exists."));
         if (!passwordEncoder.matches(credentials.getPassword(), userInDatabase.getPassword()))
             throw new HttpException(HttpStatus.BAD_REQUEST, "Incorrect password for " + userInDatabase.getEmail());
@@ -116,16 +116,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void purchase(String email, String productId) throws HttpException {
-        User user = getUserOrThrow404(email);
-        ArrayList<String> purchased = user.getPurchased(), cart = user.getCart();
-        if (!purchased.contains(productId)) purchased.add(productId);
-        cart.remove(productId);
-        user.setPurchased(purchased);
-        user.setCart(cart);
-        userRepository.save(user);
-    }
-
     private @NotNull User getUserOrThrow404(String email) throws HttpException {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) return user.get();
@@ -138,7 +128,6 @@ public class UserService {
         return switch (storage) {
             case Cart -> user.getCart();
             case Liked -> user.getLiked();
-            case Purchased -> user.getPurchased();
         };
     }
 

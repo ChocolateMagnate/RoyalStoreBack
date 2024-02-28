@@ -1,11 +1,13 @@
 package com.royal.users.domain;
 
 
+import com.royal.orders.domain.Order;
 import com.royal.users.domain.details.PublicUserDetails;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,7 +30,8 @@ public class User implements UserDetails {
     private ArrayList<String> roles = new ArrayList<>();
     private ArrayList<String> cart = new ArrayList<>();
     private ArrayList<String> liked = new ArrayList<>();
-    private ArrayList<String> purchased = new ArrayList<>();
+    @DBRef
+    private Set<Order> orders = new HashSet<>();
 
     public PublicUserDetails getPublicDetails() {
         var details = new PublicUserDetails();

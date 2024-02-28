@@ -1,0 +1,542 @@
+openapi: 3.1.0
+info:
+  title: Royal Store
+  description: Royal Store REST API Description
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: USERS
+    description: >
+      Endpoints related to authenticating and managing goods of a single user. 
+      Often times they require the JWT as authentication method.
+  - name: PRODUCTS
+    description: >
+      Generic and polymorphic endpoints that work with all product categories. Normal users can query 
+      and search for products, but it requires the "admin" authority to create/delete/update them.
+
+paths:
+  /register:
+    post:
+      summary: Creates a new user entry in the database.
+      tags:
+        - USERS
+      requestBody:
+        description: User credentials, the email, password and remember-me flag.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "hello@there.com"
+                password:
+                  type: string
+                  example: "FYckQ8tvTsxWVqVcRMgwBdP2HdafKqg3"
+                rememberMe:
+                  type: boolean
+                  example: true
+                roles:
+                  type: array
+                  items:
+                    type: string
+                  example: ["admin"]
+                profilePicture:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: User is successfully registered.
+        '302':
+          description: Another user with the same email is already registered.
+        '400':
+          description: The user credentials are not valid. This could happen wither if the password is blank or email doesn't contain the domain.
+
+  /login:
+    post:
+      summary: Attempts to log user in using JWT authentication.
+      tags:
+        - USERS
+      requestBody:
+        description: Credentials of the user, email, raw text password and the remember-me flag.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "hello@there.com"
+                password:
+                  type: string
+                  example: "FYckQ8tvTsxWVqVcRMgwBdP2HdafKqg3"
+                rememberMe:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: User is logged in, and the information about user is attached in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticatedUserDetails"
+
+        '404':
+          description: No user is registered under the given email.
+        '400':
+          description: Password does not match.
+
+  /get-cart:
+    get:
+      description: Retrieves the list of products the user added to their cart.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cart is found and returned.
+        '404':
+          description: No such user exists as stated by the JWT.
+        '401':
+          description: User session has expired and user must log in again.
+
+  /get-liked:
+    get:
+      summary: Retrieves all products users added to their preferred ones.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liked products are found and returned.
+        '404':
+          description: No such user exists as stated by the JWT.
+        '401':
+          description: User session has expired and user must log in again.
+
+  /get-purchased:
+    get:
+      summary: Retrieves all products user has bought.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Purchased products are found and returned.
+        '404':
+          description: No such user exists as stated by the JWT.
+        '401':
+          description: User session has expired and user must log in again.
+
+  /add-product-to-cart:
+    put:
+      summary: Adds a selected product to the user's cart.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          example: "65a7ca3646c4604a98e143df"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A product was successfully added to the cart.
+        '404':
+          description: Requested user or product does not exist.
+
+  /add-product-to-liked:
+    put:
+      summary: Adds a selected product to the user's liked list.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          example: "65a7ca3646c4604a98e143df"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A product was successfully added to the liked.
+        '404':
+          description: Requested user or product does not exist.
+
+  /purchase:
+    put:
+      summary: Adds a product to the list of purchased ones.
+      description: Emulates a purchased order. Removes a product from the cart if it is there and adds to the purchased list.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          example: "65a7ca3646c4604a98e143df"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A product was successfully bought by user.
+        '404':
+          description: Requested user or product does not exist.
+
+  /remove-product-from-cart:
+    delete:
+      summary: Deletes a selected product from the cart.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          example: "65a7ca3646c4604a98e143df"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A product was removed from the cart.
+        '404':
+          description: Requested user or product doesn't exist.
+
+  /remove-product-from-liked:
+    delete:
+      summary: Deletes a selected product from the liked list.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          example: "65a7ca3646c4604a98e143df"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A product was removed from the liked.
+        '404':
+          description: Requested user or product doesn't exist.
+
+  /remove-product-from-purchased:
+    delete:
+      summary: Removes product from the purchased list.
+      description: This endpoint is used to emulate cancelling a payment. Since we don't have real banking integration, we can only remove it from the purchased products.
+      security:
+        - jwt: []
+      tags:
+        - USERS
+      parameters:
+        - name: email
+          in: query
+          required: true
+          example: "hello@there.com"
+          schema:
+            type: string
+        - name: id
+          in: query
+          required: true
+          example: "65a7ca3646c4604a98e143df"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A product was removed from the liked.
+        '404':
+          description: Requested user or product doesn't exist.
+
+  /get-products:
+    post:
+      summary: Searches for products by queried parameters.
+      description: This endpoint accepts a set of properties and tries to filter out the products that satisfy it.
+      tags:
+        - PRODUCTS
+      requestBody:
+        description: The JSON object describing the criteria to search by.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Filter'
+      responses:
+        '200':
+          description: All products were found and returned to the caller. Empty list is returned if no products are found.
+
+  /get-random-products:
+    get:
+      summary: Retrieves random products.
+      description: This endpoint returns random products from the store before anything is shown.
+      tags:
+        - PRODUCTS
+      responses:
+        '200':
+          description: Products were found and returned. Returns an empty list if no products are in the database.
+
+  /get-products-by-search:
+    post:
+      summary: Retrieves the products by a search query.
+      description: This endpoint will take the string provided by user and find all products that contain the keywords in their description field.
+      tags:
+        - PRODUCTS
+      requestBody:
+        description: The search query of user.
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Any products that match the search are collected and transmitted.
+
+  /create-product:
+    post:
+      summary: Creates a new product in the store. Only users having the "admin" role can do this action.
+      security:
+        - jwt: [ "admin" ]
+      tags:
+        - PRODUCTS
+      requestBody:
+        description: >
+          The new product JSON object to save. If the same laptop already exists in the database,
+          its stock count will be incremented instead.
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product was successfully added to the store and the id is returned in the response body.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "65a7d879f59b3048b2d6af93"
+        '400':
+          description: >
+            One of the necessary fields are missing or they don't follow the standard format. 
+            The invalid fields are listed in the response body.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "No request fields can be null: price, category"
+        '401':
+          description: The user is either logged out or doesn't have the "admin" role required to add products.
+
+  /update-product:
+    post:
+      summary: Edits an existing product. Requires the "admin" privilege.
+      description: >
+        Modifies parameters of the existing laptop. It can be used to change price, picture, available 
+        items, etc. The request must always include the id of the target product to mutate and must 
+        list the whole new product to replace it with.
+      tags:
+        - PRODUCTS
+      security:
+        - jwt: ["admin"]
+      requestBody:
+        description: A new laptop object to substitute the previous one by.
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        '200':
+          description: The product was successfully edited. Beware the previous changes do not save.
+        '401':
+          description: The user is either logged out or doesn't have the "admin" role required to add products.
+        '404':
+          description: The target product does not exist for the given id.
+
+  /delete-product:
+    delete:
+      summary: Removes a product from sale.
+      description: This endpoint will remove the product from the database and make it no longer sellable.
+      tags:
+        - PRODUCTS
+      parameters:
+        - name: id
+          in: query
+          description: The product id.
+          required: true
+          example: "65a7d9697e4f1d05492a32bd"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product was deleted successfully.
+        '401':
+          description: The user is either logged out or doesn't have the "admin" role required to add products.
+        '404':
+          description: The target product does not exist for the given id.
+
+components:
+  securitySchemes:
+    jwt:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JSON Web Token that conveys user claims and signature. It's needed for all authenticated endpoints.
+
+  schemas:
+    AuthenticatedUserDetails:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "hello@there.com"
+        password:
+          type: string
+          example: "FYckQ8tvTsxWVqVcRMgwBdP2HdafKqg3"
+        rememberMe:
+          type: boolean
+          example: true
+        token:
+          type: string
+          description: The JSON Web Token that must be attached to the "Authorization" header in each protected request.
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        roles:
+          type: array
+          items:
+            type: string
+          description: The roles user have.
+          example: ["admin"]
+        profilePicture:
+          type: string
+          format: binary
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the product.
+        model:
+          type: string
+          description: The model name to save by.
+          example: "Asus Zenbook Duo"
+        price:
+          type: integer
+          description: The price of laptop in dollars.
+          example: 129
+        photo:
+          type: string
+          format: binary
+          description: The thumbnail picture of the product. Accepts .png, .jpeg and .webp formats.
+        memory:
+          type: integer
+          description: The available RAM in gigabytes.
+          example: 8
+        category:
+          type: string
+          description: The type of the electronic product being sold, currently either laptops or smartphones.
+          example: "Laptop"
+        description:
+          type: string
+          description: >
+            The description string. It will be used to search the product by keywords it contains. May contain advertised or copy-writed text.
+          example: >
+            "The innovative dual-screen design makes it the best laptop for tech enthusiasts who need the best productivity solution and effortless multitasking."
+        characteristics:
+          type: array
+          items:
+            type: object
+          description: >
+            The JSON array of key-value pairs containing variable information about the product that 
+            may not be present in all product categories. This includes product-specific information 
+            like GPU, licenses; optional values like memory latency speed or floating-point operations 
+            per second; and product-specific set of values, such as desktop/mobile OS, manufacturer, etc.
+            All characteristics must contain the "key" value that describes what type of data they describe, 
+            followed by the second unique key that differentiates the characteristic from the rest, such as
+            "desktopOS" for desktop operating systems, "mobileBrand" for manufacturers of phones/tablets, etc.
+          example: [ { "key": "OperatingSystem", "desktopOS": "Windows11" },
+                     { "key": "DesktopBrand",    "desktopBrand": "Lenovo" } ]
+    Filter:
+      type: object
+      properties:
+        model:
+          type: string
+          description: The string of the model to search.
+          example: "Lenovo ThinkBook 14"
+        memory:
+          type: integer
+          description: The available memory in gigabytes.
+          example: 12
+        lowerPriceBond:
+          type: integer
+          description: The lower price bond in dollars to show.
+          example: 150
+        upperPriceBond:
+          type: integer
+          description: The upper price bond in dollars to show.
+      required:
+        - model
+        - memory
+        - lowerPriceBond
+        - upperPriceBond
